@@ -52,7 +52,7 @@ Narrative arc types:
 - mystery: anomalous signal → data tracing → conclusion → impact assessment
 - growth: baseline → acceleration → plateau → new baseline
 
-Always respond with valid JSON only. Do not include any Markdown code blocks. All narrative text must be written in English.`;
+Always respond with valid JSON only. Do not include any Markdown code blocks. All narrative text must be written in Chinese (Simplified).`;
 
 // ─── Data sampling (keeps first, last, global max/min + uniform spread) ──────
 
@@ -106,7 +106,7 @@ Return strictly the following JSON structure (no explanatory text):
 {
   "dominantEmotion": "<curiosity|concern|tension|surprise|awe|hope>",
   "narrativeArc": "<hero_journey|tragedy|redemption|mystery|growth>",
-  "summary": "<2-3 sentence objective data summary, in English>",
+  "summary": "<2-3 sentence objective data summary, in Chinese>",
   "highlights": [
     {
       "index": <integer data point index>,
@@ -114,7 +114,7 @@ Return strictly the following JSON structure (no explanatory text):
       "value": <numeric value>,
       "type": "<peak|trough|anomaly|inflection>",
       "emotion": "<emotion id at this moment>",
-      "description": "<why this point is significant, one sentence, in English>"
+      "description": "<why this point is significant, one sentence, in Chinese>"
     }
   ],
   "emotionTrajectory": [
@@ -177,7 +177,7 @@ async function generateNarrative(
   const segmentTemplate = PHASES.map(phase => {
     const cfg = cfgMap.get(phase);
     const n = cfg ? weightToSentences(cfg.lengthWeight) : 3;
-    return `    { "phase": "${phase}", "text": "<exactly ${n} sentence(s) in English, must include at least one specific data value>", "emotion": "<emotion id>", "intensity": <0-100>, "dataRange": [<start index>, <end index>] }`;
+    return `    { "phase": "${phase}", "text": "<exactly ${n} sentence(s) in Chinese, must include at least one specific data value>", "emotion": "<emotion id>", "intensity": <0-100>, "dataRange": [<start index>, <end index>] }`;
   }).join(',\n');
 
   const prompt = `Your task is to write a cohesive affective narrative from the data analysis below. The 5 segments are chapters of a single article, not 5 independent pieces. After reading one segment, the reader should naturally want to read the next — each segment advances the story built by the previous one.
@@ -215,7 +215,7 @@ ${highlightStr}
 - Convey emotion through word choice; no metaphors or literary imagery
 - ⚠ Sentence count is a hard constraint: count periods after writing each segment; must match config above exactly
 - Adjacent segments must not start with the same word or phrase
-- All text must be in English
+- All text must be in Chinese (Simplified)
 
 Return strictly 5 segments as the following JSON (no Markdown):
 {
@@ -390,10 +390,10 @@ Requirements:
 2. Must cite at least one specific data value
 3. Tone and style must connect with adjacent segments
 4. No metaphors or literary imagery
-5. Write in English
+5. Write in Chinese (Simplified)
 
 Return strictly the following JSON (no Markdown):
-{ "text": "<exactly ${n} sentence(s) in English>" }`;
+{ "text": "<exactly ${n} sentence(s) in Chinese>" }`;
 
   const res = await client.chat.completions.create({
     model: 'gpt-4o-mini',
