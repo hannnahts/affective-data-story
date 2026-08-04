@@ -1,0 +1,79 @@
+:root {
+  --bg: #f4eee3;
+  --text: #2f231a;
+  --muted: #6d5a49;
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --sans:
+    "Avenir Next", "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", sans-serif;
+
+  color: var(--text);
+  background: var(--bg);
+  font: 16px/1.5 var(--sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100svh;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(243, 163, 60, 0.18),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at right 20%,
+      rgba(85, 184, 167, 0.16),
+      transparent 30%
+    ),
+    linear-gradient(180deg, #f6f0e6 0%, #efe4d3 100%);
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  color: inherit;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+/* Accessible focus ring — visible only via keyboard */
+:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
