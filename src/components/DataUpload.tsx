@@ -44,7 +44,6 @@ export function DataUpload() {
 
   const isActive = dragging || hovering;
 
-  // ── After upload: compact row ────────────────────────────────────────────────
   if (dataset) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
@@ -243,7 +242,6 @@ export function DataUpload() {
     );
   }
 
-  // ── Before upload: drop zone ─────────────────────────────────────────────────
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
       <div

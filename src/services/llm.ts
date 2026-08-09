@@ -4,7 +4,7 @@ import type {
   AnalysisResult, NarrativeSegment, LLMStoryOutput, SegmentConfig, NarrativePhase,
 } from '../types/emotion';
 
-// ─── Visual Grammar (Valence × Arousal → visual encoding) ────────────────────
+// Visual grammar: maps each emotion to base chart styling
 
 const VISUAL_GRAMMAR: Record<EmotionId, VisualProps> = {
   curiosity: { primaryHex: '#F59E0B', saturation: '70%', strokeWeight: 1.5, animEasing: 'ease-in-out',               chartForm: 'smooth', fillOpacity: 0.18 },
@@ -19,7 +19,6 @@ const ANNOTATION_TYPE_EN: Record<string, string> = {
   peak: 'Peak', trough: 'Low', anomaly: 'Anomaly', inflection: 'Shift',
 };
 
-// ─── System Prompt ────────────────────────────────────────────────────────────
 
 const SYSTEM_PROMPT = `You are an analyst specializing in Affective Data Storytelling.
 
@@ -54,7 +53,7 @@ Narrative arc types:
 
 Always respond with valid JSON only. Do not include any Markdown code blocks. All narrative text must be written in English.`;
 
-// ─── Data sampling (keeps first, last, global max/min + uniform spread) ──────
+// Keeps first, last, global max/min, and a uniform spread up to maxPoints
 
 function sampleData(data: DataPoint[], maxPoints = 300): { sampled: DataPoint[]; wasSampled: boolean } {
   if (data.length <= maxPoints) return { sampled: data, wasSampled: false };
@@ -71,7 +70,7 @@ function sampleData(data: DataPoint[], maxPoints = 300): { sampled: DataPoint[];
   return { sampled, wasSampled: true };
 }
 
-// ─── Stage 1: Data Analysis ───────────────────────────────────────────────────
+// Stage 1: analyse the dataset and extract emotional highlights
 
 async function analyzeData(
   client: OpenAI,
@@ -83,7 +82,7 @@ async function analyzeData(
   const { sampled, wasSampled } = sampleData(data);
   const dataStr = sampled.map((d, i) => `[${i}] ${d.month}: ${d.value}`).join('\n');
   const samplingNote = wasSampled
-    ? `（注：原始数据共 ${data.length} 条，已均匀采样至 ${sampled.length} 条，保留了首尾及极值点）\n`
+    ? `(Note: original dataset has ${data.length} rows; uniformly sampled to ${sampled.length}, retaining first, last, and extreme values.)\n`
     : '';
 
   const emotionConstraint = targetEmotion !== 'auto'
@@ -137,7 +136,7 @@ Extract 2-4 of the most significant data points for highlights, with each type (
   return JSON.parse(res.choices[0].message.content!) as AnalysisResult;
 }
 
-// ─── Stage 2: Narrative Generation ───────────────────────────────────────────
+// Stage 2: generate the five-segment narrative
 
 const intensityLabel = (v: number) => v > 70 ? 'intense' : v > 40 ? 'moderate' : 'restrained';
 
@@ -242,7 +241,7 @@ ${segmentTemplate}
   };
 }
 
-// ─── Stage 3: Visual Encoding (deterministic, no LLM call needed) ─────────────
+// Stage 3: derive visual props deterministically from emotion + intensity (no LLM call)
 
 function deriveVisualProps(analysis: AnalysisResult, intensity: number, data: DataPoint[]): AnnotatedVisualProps {
   const base = VISUAL_GRAMMAR[analysis.dominantEmotion];
@@ -300,7 +299,6 @@ function deriveVisualProps(analysis: AnalysisResult, intensity: number, data: Da
   return { ...modulated, annotations };
 }
 
-// ─── Public Pipeline Entry Point ──────────────────────────────────────────────
 
 export type PipelineStage = 'analyzing' | 'narrating' | 'encoding';
 
@@ -341,7 +339,7 @@ export async function runStoryPipeline(
   };
 }
 
-// ─── Partial regeneration: single segment only ────────────────────────────────
+// Regenerates a single segment without touching the rest of the output
 
 export async function regenerateSegmentText(
   apiKey: string,

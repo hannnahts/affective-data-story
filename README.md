@@ -1,73 +1,33 @@
-# React + TypeScript + Vite
+# Affective Data Storytelling
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A research prototype that turns structured datasets into emotionally framed narratives. You upload a CSV or JSON file, pick an emotion target (curiosity, tension, awe, etc.), and the app runs it through a three-stage GPT-4o-mini pipeline to produce a five-part story with matching chart styling.
 
-Currently, two official plugins are available:
+## How it works
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. **Data analysis** - the model identifies dominant emotion, narrative arc, and key data moments
+2. **Narrative generation** - produces five connected segments (exposition through denouement) with per-phase intensity and length controls
+3. **Visual encoding** - derives chart form, colour, stroke weight, and fill opacity from the emotion and intensity settings
 
-## React Compiler
+The five segments are treated as chapters of a single piece, not independent paragraphs. Each one is constrained to pick up from where the previous left off.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Stack
 
-## Expanding the ESLint configuration
+- React 19, TypeScript, Vite
+- Zustand for state
+- Recharts for visualisation
+- OpenAI `gpt-4o-mini` via browser SDK
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Running locally
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Add a `VITE_OPENAI_API_KEY` environment variable in `.env.local` to enable live generation. Without it, the app falls back to mock outputs so you can still explore the interface.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Controls
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **Emotion target** - sets the interpretive lens for the whole narrative
+- **Phase tuning** - drag nodes on the arc diagram to adjust intensity (vertical) and sentence count (horizontal) per phase independently
+- After the first generation, changing the emotion or committing a phase drag will automatically regenerate the relevant content without touching the rest

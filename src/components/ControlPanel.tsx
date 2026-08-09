@@ -53,7 +53,6 @@ export function ControlPanel() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-      {/* ── Zone 1: Data Input ──────────────────────────────────────────── */}
       <div style={{
         background: '#ffffff',
         border: '1.5px solid #d1d5db',
@@ -67,7 +66,6 @@ export function ControlPanel() {
         <DataUpload />
       </div>
 
-      {/* ── Zone 2: Parameters ──────────────────────────────────────────── */}
       <div style={{
         background: '#f9fafb',
         border: '1.5px solid #e5e7eb',
@@ -154,14 +152,12 @@ export function ControlPanel() {
 
       </div>
 
-      {/* ── Error ───────────────────────────────────────────────────────── */}
       {error && (
         <div role="alert" style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, padding: '8px 12px' }}>
           <p style={{ margin: 0, fontSize: 12, color: '#dc2626' }}>⚠ {error}</p>
         </div>
       )}
 
-      {/* ── Generate Button ──────────────────────────────────────────────── */}
       <button
         onClick={generate}
         disabled={isLoading}

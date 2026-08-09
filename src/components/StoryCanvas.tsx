@@ -4,7 +4,7 @@ import { EMOTION_META, MOCK_OUTPUTS } from '../data/mockData';
 import { EmotionChart } from './EmotionChart';
 import type { DataPoint, NarrativeSegment, NarrativePhase } from '../types/emotion';
 
-// ─── Pivot helper: {month, groupCol, yCol} → {month, Group1: v, Group2: v, …} ─
+// Pivots long-form data into wide format keyed by group column value
 
 function pivotByGroup(data: DataPoint[], groupCol: string, yCol: string): { pivoted: DataPoint[]; groups: string[] } {
   const byX = new Map<string, DataPoint>();
@@ -31,7 +31,6 @@ function pivotByGroup(data: DataPoint[], groupCol: string, yCol: string): { pivo
   return { pivoted, groups };
 }
 
-// ─── Phase labels & colors ────────────────────────────────────────────────────
 
 const PHASE_META: Record<NarrativePhase, { label: string; color: string }> = {
   opening:    { label: 'Exposition',     color: '#9ca3af' },
@@ -41,7 +40,6 @@ const PHASE_META: Record<NarrativePhase, { label: string; color: string }> = {
   coda:       { label: 'Denouement',     color: '#8b5cf6' },
 };
 
-// ─── Loading skeleton ─────────────────────────────────────────────────────────
 
 const STAGE_LABELS: Record<string, string> = {
   analyzing: 'Analyzing data patterns and identifying emotional highlights…',
@@ -75,7 +73,6 @@ function LoadingSkeleton({ stage }: { stage: string | null }) {
   );
 }
 
-// ─── Narrative segment card ───────────────────────────────────────────────────
 
 function SegmentCard({ seg, index, total, isActive, isRegenerating, onSelect, onHoverChange }: {
   seg: NarrativeSegment; index: number; total: number;
@@ -142,10 +139,6 @@ function SegmentCard({ seg, index, total, isActive, isRegenerating, onSelect, on
     </div>
   );
 }
-
-// ─── Emotion trajectory mini-viz ─────────────────────────────────────────────
-
-// ─── Main canvas ──────────────────────────────────────────────────────────────
 
 export function StoryCanvas() {
   const { selectedEmotion, intensity, generated, isLoading, loadingStage, llmOutput, dataset, setHoveredSegIdx, regeneratingPhase } = useEmotionStore();
@@ -222,7 +215,6 @@ export function StoryCanvas() {
 
   const emo = EMOTION_META.find(e => e.id === selectedEmotion)!;
 
-  // ── LLM Live Output ───────────────────────────────────────────────────────
   if (llmOutput) {
     const { title, analysis, segments, visualProps } = llmOutput;
     const yLabel = effectiveYColumns?.length === 1 ? effectiveYColumns[0] : undefined;
@@ -322,7 +314,6 @@ export function StoryCanvas() {
     );
   }
 
-  // ── Mock Fallback ─────────────────────────────────────────────────────────
   const output = MOCK_OUTPUTS[selectedEmotion];
   const mockYLabel = effectiveYColumns?.length === 1 ? effectiveYColumns[0] : undefined;
   const t = intensity / 100;
