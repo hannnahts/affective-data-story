@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import type { NarrativePhase, SegmentConfig } from '../types/emotion';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
 
 const PHASE_META: Array<{ phase: NarrativePhase; label: string; color: string }> = [
   { phase: 'opening',    label: 'Exposition',  color: '#9ca3af' },
@@ -19,7 +18,6 @@ const Y_TOP = 16;       // y when intensity = 100
 const Y_BOT = 130;      // y when intensity = 0
 const LABEL_Y = SVG_H - 12;
 
-// ─── Math helpers ─────────────────────────────────────────────────────────────
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
@@ -55,7 +53,6 @@ function smoothCurve(pts: Array<{ x: number; y: number }>): string {
   return d;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
 
 interface Props {
   segmentConfigs: SegmentConfig[];

@@ -13,13 +13,11 @@ const DEFAULT_SEGMENT_CONFIGS: SegmentConfig[] = [
 ];
 
 interface EmotionStore {
-  // ── Emotion selection ──────────────────────────────────────────────────────
   selectedEmotion: EmotionId;
   intensity: number;
   setEmotion: (id: EmotionId) => void;
   setIntensity: (value: number) => void;
 
-  // ── API & dataset ──────────────────────────────────────────────────────────
   apiKey: string;
   setApiKey: (key: string) => void;
   dataset: Dataset | null;
@@ -29,26 +27,21 @@ interface EmotionStore {
   setDatasetYColumns: (cols: string[]) => void;
   setDatasetGroupBy: (col: string | null) => void;
 
-  // ── Per-phase config ───────────────────────────────────────────────────────
   segmentConfigs: SegmentConfig[];
   setSegmentConfig: (phase: NarrativePhase, patch: Partial<Omit<SegmentConfig, 'phase'>>) => void;
 
-  // ── Pipeline state ─────────────────────────────────────────────────────────
   generated: boolean;
   isLoading: boolean;
   loadingStage: LoadingStage;
   error: string | null;
   llmOutput: LLMStoryOutput | null;
 
-  // ── Hover interaction ──────────────────────────────────────────────────────
   hoveredSegIdx: number | null;
   setHoveredSegIdx: (idx: number | null) => void;
 
-  // ── Partial regen ──────────────────────────────────────────────────────────
   regeneratingPhase: NarrativePhase | null;
   regenerateSegment: (phase: NarrativePhase) => Promise<void>;
 
-  // ── Actions ────────────────────────────────────────────────────────────────
   generate: () => Promise<void>;
   reset: () => void;
 }
@@ -101,7 +94,7 @@ export const useEmotionStore = create<EmotionStore>((set, get) => ({
     }
 
     const data = dataset?.parsed ?? MOCK_OUTPUTS[selectedEmotion].data;
-    const datasetName = dataset?.name ?? '示例数据集';
+    const datasetName = dataset?.name ?? 'sample dataset';
     const description = dataset?.description;
 
     set({ isLoading: true, error: null, generated: false, llmOutput: null, loadingStage: 'analyzing' });
@@ -120,9 +113,9 @@ export const useEmotionStore = create<EmotionStore>((set, get) => ({
       set({ llmOutput: output, generated: true, isLoading: false, loadingStage: null });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
-      const friendly = msg.includes('401') ? 'Invalid API key — please check and try again'
-        : msg.includes('429') ? 'Rate limit exceeded — please wait a moment and retry'
-        : msg.includes('fetch') || msg.includes('network') ? 'Network error — please check your connection'
+      const friendly = msg.includes('401') ? 'Invalid API key. Please check and try again.'
+        : msg.includes('429') ? 'Rate limit exceeded. Please wait a moment and retry.'
+        : msg.includes('fetch') || msg.includes('network') ? 'Network error. Please check your connection.'
         : `Generation failed: ${msg}`;
       set({ error: friendly, isLoading: false, loadingStage: null });
     }
