@@ -15,7 +15,7 @@ function splitCSVLine(line: string): string[] {
 
 export function parseCSV(text: string, name: string): Dataset {
   const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
-  if (lines.length < 2) throw new Error('CSV 需要至少一行表头和一行数据');
+  if (lines.length < 2) throw new Error('CSV must have at least one header row and one data row');
 
   const headers = splitCSVLine(lines[0]);
   const rows = lines.slice(1).map(l => splitCSVLine(l));
@@ -26,7 +26,7 @@ export function parseCSV(text: string, name: string): Dataset {
   const numericCols = headers.map((_, i) => i).filter(i => isNumericCol(i));
   const stringCols  = headers.map((_, i) => i).filter(i => !isNumericCol(i));
 
-  if (numericCols.length === 0) throw new Error('CSV 中未找到数值列');
+  if (numericCols.length === 0) throw new Error('CSV contains no numeric columns');
 
   // Default X: first string column, or first column if all numeric
   const defaultLabelColIdx = stringCols.length > 0 ? stringCols[0] : 0;
@@ -58,17 +58,17 @@ export function parseCSV(text: string, name: string): Dataset {
 
 export function parseJSON(text: string, name: string): Dataset {
   let raw: unknown;
-  try { raw = JSON.parse(text); } catch { throw new Error('无效的 JSON 格式'); }
+  try { raw = JSON.parse(text); } catch { throw new Error('Invalid JSON format'); }
 
-  if (!Array.isArray(raw)) throw new Error('JSON 必须是数组格式');
+  if (!Array.isArray(raw)) throw new Error('JSON must be an array');
   const arr = raw as Record<string, unknown>[];
-  if (arr.length === 0) throw new Error('JSON 数组不能为空');
+  if (arr.length === 0) throw new Error('JSON array is empty');
 
   const keys = Object.keys(arr[0]);
   const numericKeys = keys.filter(k => typeof arr[0][k] === 'number');
   const labelKey = keys.find(k => typeof arr[0][k] === 'string');
 
-  if (numericKeys.length === 0) throw new Error('JSON 对象中未找到数值字段');
+  if (numericKeys.length === 0) throw new Error('No numeric fields found in JSON objects');
 
   const parsed: DataPoint[] = arr.map((item, i) => {
     const xVal = labelKey ? String(item[labelKey]) : String(i + 1);

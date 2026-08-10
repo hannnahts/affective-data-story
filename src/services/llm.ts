@@ -331,7 +331,7 @@ export async function runStoryPipeline(
   const visualProps = deriveVisualProps(analysis, intensity, data);
 
   return {
-    title: llmTitle || `${datasetName}数据报告`,
+    title: llmTitle || `${datasetName} — Data Report`,
     analysis,
     segments,
     visualProps,

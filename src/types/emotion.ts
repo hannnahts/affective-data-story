@@ -91,7 +91,7 @@ export interface LLMStoryOutput {
 export interface SegmentConfig {
   phase: NarrativePhase;
   intensity: number;    // 0–100, overrides global intensity for this phase
-  lengthWeight: number; // 1–5 (1=极简 ~1句, 5=深度 ~4-5句)
+  lengthWeight: number; // 1–5, maps directly to sentence count
 }
 
 export interface Dataset {

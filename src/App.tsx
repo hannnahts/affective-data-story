@@ -131,7 +131,7 @@ export default function App() {
 
         <button
           onClick={() => setSettingsOpen(p => !p)}
-          aria-label="设置"
+          aria-label="Settings"
           aria-expanded={settingsOpen}
           style={{
             background: settingsOpen ? '#f3f4f6' : 'none',
