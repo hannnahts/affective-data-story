@@ -85,7 +85,7 @@ export function ControlPanel() {
                   key={emo.id}
                   onClick={() => setEmotion(emo.id as EmotionId)}
                   aria-pressed={active}
-                  aria-label={`选择情感：${emo.label}`}
+                  aria-label={`Select emotion: ${emo.label}`}
                   style={{
                     padding: '10px 4px',
                     borderRadius: 10,
