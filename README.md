@@ -1,20 +1,26 @@
 # Affective Data Storytelling
 
-A research prototype that turns structured datasets into emotionally framed narratives. You upload a CSV or JSON file, pick an emotion target (curiosity, tension, awe, etc.), and the app runs it through a three-stage GPT-4o-mini pipeline to produce a five-part story with matching chart styling.
+A research prototype exploring affective computing applied to data journalism. It takes a structured dataset, maps it onto the Russell Circumplex Model of emotion (valence × arousal), and uses GPT-4o-mini to generate a five-act narrative following Freytag's Pyramid structure, with chart styling derived from the selected emotion.
 
-## How it works
+## Theoretical basis
 
-1. **Data analysis** - the model identifies dominant emotion, narrative arc, and key data moments
-2. **Narrative generation** - produces five connected segments (exposition through denouement) with per-phase intensity and length controls
-3. **Visual encoding** - derives chart form, colour, stroke weight, and fill opacity from the emotion and intensity settings
+**Russell Circumplex Model** — six emotions (curiosity, concern, tension, surprise, awe, hope) are positioned on a valence/arousal plane. Each carries a distinct visual grammar: for example, high-arousal negative emotions (tension) produce jagged, heavy-stroke charts, while high-valence low-arousal emotions (hope) produce smooth filled area charts with low opacity.
 
-The five segments are treated as chapters of a single piece, not independent paragraphs. Each one is constrained to pick up from where the previous left off.
+**Freytag's Pyramid** — the narrative is structured as five phases: exposition, rising action, climax, falling action, and denouement. Each phase has independently configurable intensity (0–100) and length (sentence count), mapped onto the arc diagram in the UI. The five segments are generated as a single coherent piece, not five independent paragraphs.
+
+**Affective visual encoding** — chart form, stroke weight, fill opacity, and colour saturation are derived deterministically from the dominant emotion and intensity setting. No manual styling is needed.
+
+## Three-stage pipeline
+
+1. **Data analysis** (`analyzeData`) — GPT-4o-mini reads the dataset and returns dominant emotion, narrative arc type, key highlights (peak, trough, anomaly, inflection), and an emotion trajectory across all data points
+2. **Narrative generation** (`generateNarrative`) — produces the five Freytag segments with per-phase intensity and sentence count constraints; segments are prompted to connect narratively
+3. **Visual encoding** (`deriveVisualProps`) — deterministic, no LLM call; maps emotion + intensity to chart properties using a predefined visual grammar table
 
 ## Stack
 
 - React 19, TypeScript, Vite
-- Zustand for state
-- Recharts for visualisation
+- Zustand for global state
+- Recharts for chart rendering (area/line, with annotation overlays)
 - OpenAI `gpt-4o-mini` via browser SDK
 
 ## Running locally
@@ -24,10 +30,10 @@ npm install
 npm run dev
 ```
 
-Add a `VITE_OPENAI_API_KEY` environment variable in `.env.local` to enable live generation. Without it, the app falls back to mock outputs so you can still explore the interface.
+Add a `VITE_OPENAI_API_KEY` environment variable in `.env.local` to enable live generation. Without it, the app runs in mock mode using pre-written outputs for each emotion, so the interface is fully explorable without an API key.
 
-## Controls
+## Key interactions
 
-- **Emotion target** - sets the interpretive lens for the whole narrative
-- **Phase tuning** - drag nodes on the arc diagram to adjust intensity (vertical) and sentence count (horizontal) per phase independently
-- After the first generation, changing the emotion or committing a phase drag will automatically regenerate the relevant content without touching the rest
+- **Emotion picker** — selects the affective lens; changing it after first generation triggers a debounced auto-regenerate (1.2 s)
+- **Phase tuning** — an interactive SVG arc diagram lets you drag each Freytag phase node; vertical position maps to intensity, horizontal to sentence count; releasing a node regenerates only that segment without touching the rest
+- **Data upload** — accepts CSV or JSON; axis assignment (x column, y columns, optional group-by) is configurable after upload
