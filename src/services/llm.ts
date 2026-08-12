@@ -148,11 +148,12 @@ async function generateNarrative(
   analysis: AnalysisResult,
   globalIntensity: number,
   segmentConfigs: SegmentConfig[],
+  dataLength: number,
 ): Promise<{ title: string; segments: NarrativeSegment[] }> {
   const globalDesc = intensityLabel(globalIntensity);
 
   const highlightStr = analysis.highlights.map(h =>
-    `  - [${h.label}] value=${h.value}, type=${h.type}: ${h.description}`
+    `  - [index ${h.index}] label="${h.label}", value=${h.value}, type=${h.type}: ${h.description}`
   ).join('\n');
 
   const arcNames: Record<string, string> = {
@@ -176,7 +177,7 @@ async function generateNarrative(
   const segmentTemplate = PHASES.map(phase => {
     const cfg = cfgMap.get(phase);
     const n = cfg ? weightToSentences(cfg.lengthWeight) : 3;
-    return `    { "phase": "${phase}", "text": "<exactly ${n} sentence(s) in English, must include at least one specific data value>", "emotion": "<emotion id>", "intensity": <0-100>, "dataRange": [<start index>, <end index>] }`;
+    return `    { "phase": "${phase}", "text": "<exactly ${n} sentence(s) in English, must include at least one specific data value>", "emotion": "<emotion id>", "intensity": <0-100>, "dataRange": [<first index this segment covers, 0-${dataLength - 1}>, <last index this segment covers, 0-${dataLength - 1}>] }`;
   }).join(',\n');
 
   const prompt = `Your task is to write a cohesive affective narrative from the data analysis below. The 5 segments are chapters of a single article, not 5 independent pieces. After reading one segment, the reader should naturally want to read the next — each segment advances the story built by the previous one.
@@ -189,7 +190,8 @@ Global intensity (reference baseline): ${globalIntensity}/100 — ${globalDesc}
 ⚠ Per-phase sentence count and intensity (highest priority — enforce strictly):
 ${phaseConfigStr}
 
-Key data moments:
+Dataset index range: 0 to ${dataLength - 1} (${dataLength} data points total)
+Key data moments (use these indices when setting dataRange):
 ${highlightStr}
 
 [NARRATIVE COHERENCE — most important constraint]
@@ -325,7 +327,7 @@ export async function runStoryPipeline(
     { phase: 'resolution', intensity: 60, lengthWeight: 3 },
     { phase: 'coda',       intensity: 40, lengthWeight: 2 },
   ] as SegmentConfig[];
-  const { title: llmTitle, segments } = await generateNarrative(client, analysis, intensity, configs);
+  const { title: llmTitle, segments } = await generateNarrative(client, analysis, intensity, configs, data.length);
 
   onStage?.('encoding');
   const visualProps = deriveVisualProps(analysis, intensity, data);
