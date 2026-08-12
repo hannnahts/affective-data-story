@@ -140,6 +140,21 @@ function SegmentCard({ seg, index, total, isActive, isRegenerating, onSelect, on
   );
 }
 
+function segmentHoverRange(
+  segIdx: number | null,
+  segments: NarrativeSegment[],
+  dataLen: number,
+): [number, number] | null {
+  if (segIdx === null || segments.length === 0) return null;
+  const seg = segments[segIdx];
+  if (seg?.dataRange && seg.dataRange[0] >= 0 && seg.dataRange[1] < dataLen && seg.dataRange[0] <= seg.dataRange[1]) {
+    return seg.dataRange;
+  }
+  const start = Math.floor(segIdx * dataLen / segments.length);
+  const end = Math.min(Math.floor((segIdx + 1) * dataLen / segments.length), dataLen - 1);
+  return [start, end];
+}
+
 export function StoryCanvas() {
   const { selectedEmotion, intensity, generated, isLoading, loadingStage, llmOutput, dataset, hoveredSegIdx, setHoveredSegIdx, regeneratingPhase } = useEmotionStore();
   const [activeSegIdx, setActiveSegIdx] = useState<number | null>(null);
@@ -297,7 +312,7 @@ export function StoryCanvas() {
             </span>
           </div>
           <div style={{ padding: '12px 16px 8px' }}>
-            <EmotionChart data={chartData} visualProps={visualProps} annotations={visualProps.annotations} activeRange={null} hoveredRange={hoveredSegIdx !== null ? (segments[hoveredSegIdx]?.dataRange ?? null) : null} xLabel={xLabel} yLabel={yLabel} yColumns={effectiveYColumns} />
+            <EmotionChart data={chartData} visualProps={visualProps} annotations={visualProps.annotations} activeRange={null} hoveredRange={segmentHoverRange(hoveredSegIdx, segments, chartData.length)} xLabel={xLabel} yLabel={yLabel} yColumns={effectiveYColumns} />
           </div>
         </div>
 
