@@ -141,7 +141,7 @@ function SegmentCard({ seg, index, total, isActive, isRegenerating, onSelect, on
 }
 
 export function StoryCanvas() {
-  const { selectedEmotion, intensity, generated, isLoading, loadingStage, llmOutput, dataset, setHoveredSegIdx, regeneratingPhase } = useEmotionStore();
+  const { selectedEmotion, intensity, generated, isLoading, loadingStage, llmOutput, dataset, hoveredSegIdx, setHoveredSegIdx, regeneratingPhase } = useEmotionStore();
   const [activeSegIdx, setActiveSegIdx] = useState<number | null>(null);
 
   // Derive chart data — pivot when groupByColumn is active
@@ -297,7 +297,7 @@ export function StoryCanvas() {
             </span>
           </div>
           <div style={{ padding: '12px 16px 8px' }}>
-            <EmotionChart data={chartData} visualProps={visualProps} annotations={visualProps.annotations} activeRange={null} hoveredRange={null}xLabel={xLabel} yLabel={yLabel} yColumns={effectiveYColumns} />
+            <EmotionChart data={chartData} visualProps={visualProps} annotations={visualProps.annotations} activeRange={null} hoveredRange={hoveredSegIdx !== null ? (segments[hoveredSegIdx]?.dataRange ?? null) : null} xLabel={xLabel} yLabel={yLabel} yColumns={effectiveYColumns} />
           </div>
         </div>
 
