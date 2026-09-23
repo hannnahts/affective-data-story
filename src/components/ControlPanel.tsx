@@ -27,19 +27,29 @@ export function ControlPanel() {
     selectedEmotion, apiKey, isLoading, loadingStage, error,
     generated, setEmotion, generate,
     segmentConfigs, setSegmentConfig, regeneratingPhase, regenerateSegment,
+    language,
   } = useEmotionStore();
 
-  // Auto-refresh: after first generation, debounce 1.2s on emotion change
-  const isFirstRender = useRef(true);
+  // Auto-refresh: after first generation, debounce on emotion or language change
+  const isFirstRenderEmo = useRef(true);
+  const isFirstRenderLang = useRef(true);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    if (isFirstRender.current) { isFirstRender.current = false; return; }
+    if (isFirstRenderEmo.current) { isFirstRenderEmo.current = false; return; }
     if (!generated || isLoading || !apiKey.trim()) return;
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => { generate(); }, 1200);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedEmotion]);
+  useEffect(() => {
+    if (isFirstRenderLang.current) { isFirstRenderLang.current = false; return; }
+    if (!generated || isLoading || !apiKey.trim()) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => { generate(); }, 800);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language]);
 
   const activeEmo = EMOTION_META.find(e => e.id === selectedEmotion)!;
   const isLiveMode = apiKey.trim().length > 0;

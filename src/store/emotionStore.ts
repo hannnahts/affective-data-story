@@ -39,6 +39,9 @@ interface EmotionStore {
   hoveredSegIdx: number | null;
   setHoveredSegIdx: (idx: number | null) => void;
 
+  language: 'en' | 'zh';
+  setLanguage: (lang: 'en' | 'zh') => void;
+
   regeneratingPhase: NarrativePhase | null;
   regenerateSegment: (phase: NarrativePhase) => Promise<void>;
 
@@ -60,6 +63,7 @@ export const useEmotionStore = create<EmotionStore>((set, get) => ({
   error: null,
   llmOutput: null,
   hoveredSegIdx: null,
+  language: 'en',
   regeneratingPhase: null,
 
   setEmotion: (id) => set({ selectedEmotion: id }),
@@ -86,7 +90,7 @@ export const useEmotionStore = create<EmotionStore>((set, get) => ({
   })),
 
   generate: async () => {
-    const { apiKey, selectedEmotion, intensity, dataset, segmentConfigs } = get();
+    const { apiKey, selectedEmotion, intensity, dataset, segmentConfigs, language } = get();
 
     if (!apiKey.trim()) {
       set({ generated: true, llmOutput: null, error: null });
@@ -109,6 +113,7 @@ export const useEmotionStore = create<EmotionStore>((set, get) => ({
         (stage) => set({ loadingStage: stage }),
         description,
         segmentConfigs,
+        language,
       );
       set({ llmOutput: output, generated: true, isLoading: false, loadingStage: null });
     } catch (err) {
@@ -122,7 +127,7 @@ export const useEmotionStore = create<EmotionStore>((set, get) => ({
   },
 
   regenerateSegment: async (phase) => {
-    const { apiKey, llmOutput, segmentConfigs, intensity } = get();
+    const { apiKey, llmOutput, segmentConfigs, intensity, language } = get();
     if (!apiKey.trim() || !llmOutput) return;
     const config = segmentConfigs.find(c => c.phase === phase);
     if (!config) return;
@@ -134,7 +139,7 @@ export const useEmotionStore = create<EmotionStore>((set, get) => ({
         globalIntensity: intensity,
         existingSegments: llmOutput.segments,
         title: llmOutput.title,
-      });
+      }, language);
       set(state => ({
         regeneratingPhase: null,
         llmOutput: state.llmOutput ? {
@@ -150,5 +155,6 @@ export const useEmotionStore = create<EmotionStore>((set, get) => ({
   },
 
   setHoveredSegIdx: (idx) => set({ hoveredSegIdx: idx }),
+  setLanguage: (lang) => set({ language: lang }),
   reset: () => set({ generated: false, llmOutput: null, error: null, loadingStage: null }),
 }));

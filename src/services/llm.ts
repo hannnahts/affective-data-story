@@ -20,7 +20,9 @@ const ANNOTATION_TYPE_EN: Record<string, string> = {
 };
 
 
-const SYSTEM_PROMPT = `You are an analyst specializing in Affective Data Storytelling.
+function getSystemPrompt(language: 'en' | 'zh'): string {
+  const langName = language === 'zh' ? 'Chinese (Simplified)' : 'English';
+  return `You are an analyst specializing in Affective Data Storytelling.
 
 Your core task: use a specified emotion as the narrative lens to transform data into analytically rigorous, emotionally resonant reports. Emotion is not decoration — it is a framework for understanding data. The same numbers, viewed through different emotional lenses, produce entirely different interpretive frames and narrative emphasis.
 
@@ -51,7 +53,8 @@ Narrative arc types:
 - mystery: anomalous signal → data tracing → conclusion → impact assessment
 - growth: baseline → acceleration → plateau → new baseline
 
-Always respond with valid JSON only. Do not include any Markdown code blocks. All narrative text must be written in English.`;
+Always respond with valid JSON only. Do not include any Markdown code blocks. All narrative text must be written in ${langName}.`;
+}
 
 // Keeps first, last, global max/min, and a uniform spread up to maxPoints
 
@@ -77,6 +80,7 @@ async function analyzeData(
   data: DataPoint[],
   targetEmotion: EmotionId | 'auto',
   datasetName: string,
+  language: 'en' | 'zh',
   description?: string,
 ): Promise<AnalysisResult> {
   const { sampled, wasSampled } = sampleData(data);
@@ -93,6 +97,8 @@ async function analyzeData(
     ? `Dataset context: "${description.trim()}"\n`
     : '';
 
+  const langName = language === 'zh' ? 'Chinese (Simplified)' : 'English';
+
   const prompt = `Analyze the following dataset and identify its emotional characteristics and key moments.
 
 Dataset name: "${datasetName}"
@@ -105,7 +111,7 @@ Return strictly the following JSON structure (no explanatory text):
 {
   "dominantEmotion": "<curiosity|concern|tension|surprise|awe|hope>",
   "narrativeArc": "<hero_journey|tragedy|redemption|mystery|growth>",
-  "summary": "<2-3 sentence objective data summary, in English>",
+  "summary": "<2-3 sentence objective data summary, in ${langName}>",
   "highlights": [
     {
       "index": <integer data point index>,
@@ -113,7 +119,7 @@ Return strictly the following JSON structure (no explanatory text):
       "value": <numeric value>,
       "type": "<peak|trough|anomaly|inflection>",
       "emotion": "<emotion id at this moment>",
-      "description": "<why this point is significant, one sentence, in English>"
+      "description": "<why this point is significant, one sentence, in ${langName}>"
     }
   ],
   "emotionTrajectory": [
@@ -126,7 +132,7 @@ Extract 2-4 of the most significant data points for highlights, with each type (
   const res = await client.chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'system', content: getSystemPrompt(language) },
       { role: 'user', content: prompt },
     ],
     response_format: { type: 'json_object' },
@@ -149,8 +155,10 @@ async function generateNarrative(
   globalIntensity: number,
   segmentConfigs: SegmentConfig[],
   dataLength: number,
+  language: 'en' | 'zh',
 ): Promise<{ title: string; segments: NarrativeSegment[] }> {
   const globalDesc = intensityLabel(globalIntensity);
+  const langName = language === 'zh' ? 'Chinese (Simplified)' : 'English';
 
   const highlightStr = analysis.highlights.map(h =>
     `  - [index ${h.index}] label="${h.label}", value=${h.value}, type=${h.type}: ${h.description}`
@@ -177,7 +185,7 @@ async function generateNarrative(
   const segmentTemplate = PHASES.map(phase => {
     const cfg = cfgMap.get(phase);
     const n = cfg ? weightToSentences(cfg.lengthWeight) : 3;
-    return `    { "phase": "${phase}", "text": "<exactly ${n} sentence(s) in English, must include at least one specific data value>", "emotion": "<emotion id>", "intensity": <0-100>, "dataRange": [<first index this segment covers, 0-${dataLength - 1}>, <last index this segment covers, 0-${dataLength - 1}>] }`;
+    return `    { "phase": "${phase}", "text": "<exactly ${n} sentence(s) in ${langName}, must include at least one specific data value>", "emotion": "<emotion id>", "intensity": <0-100>, "dataRange": [<first index this segment covers, 0-${dataLength - 1}>, <last index this segment covers, 0-${dataLength - 1}>] }`;
   }).join(',\n');
 
   const prompt = `Your task is to write a cohesive affective narrative from the data analysis below. The 5 segments are chapters of a single article, not 5 independent pieces. After reading one segment, the reader should naturally want to read the next — each segment advances the story built by the previous one.
@@ -216,7 +224,7 @@ ${highlightStr}
 - Convey emotion through word choice; no metaphors or literary imagery
 - ⚠ Sentence count is a hard constraint: count periods after writing each segment; must match config above exactly
 - Adjacent segments must not start with the same word or phrase
-- All text must be in English
+- All text must be in ${langName}
 
 Return strictly 5 segments as the following JSON (no Markdown):
 {
@@ -229,7 +237,7 @@ ${segmentTemplate}
   const res = await client.chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'system', content: getSystemPrompt(language) },
       { role: 'user', content: prompt },
     ],
     response_format: { type: 'json_object' },
@@ -313,11 +321,12 @@ export async function runStoryPipeline(
   onStage?: (stage: PipelineStage) => void,
   description?: string,
   segmentConfigs?: SegmentConfig[],
+  language: 'en' | 'zh' = 'en',
 ): Promise<LLMStoryOutput> {
   const client = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
 
   onStage?.('analyzing');
-  const analysis = await analyzeData(client, data, targetEmotion, datasetName, description);
+  const analysis = await analyzeData(client, data, targetEmotion, datasetName, language, description);
 
   onStage?.('narrating');
   const configs = segmentConfigs ?? [
@@ -327,7 +336,7 @@ export async function runStoryPipeline(
     { phase: 'resolution', intensity: 60, lengthWeight: 3 },
     { phase: 'coda',       intensity: 40, lengthWeight: 2 },
   ] as SegmentConfig[];
-  const { title: llmTitle, segments } = await generateNarrative(client, analysis, intensity, configs, data.length);
+  const { title: llmTitle, segments } = await generateNarrative(client, analysis, intensity, configs, data.length, language);
 
   onStage?.('encoding');
   const visualProps = deriveVisualProps(analysis, intensity, data);
@@ -353,10 +362,12 @@ export async function regenerateSegmentText(
     existingSegments: NarrativeSegment[];
     title: string;
   },
+  language: 'en' | 'zh' = 'en',
 ): Promise<string> {
   const client = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
   const { analysis, globalIntensity, existingSegments, title } = context;
   const n = config.lengthWeight;
+  const langName = language === 'zh' ? 'Chinese (Simplified)' : 'English';
 
   const phaseDesc: Record<string, string> = {
     opening:    'Opening (establish background and starting state)',
@@ -390,15 +401,15 @@ Requirements:
 2. Must cite at least one specific data value
 3. Tone and style must connect with adjacent segments
 4. No metaphors or literary imagery
-5. Write in English
+5. Write in ${langName}
 
 Return strictly the following JSON (no Markdown):
-{ "text": "<exactly ${n} sentence(s) in English>" }`;
+{ "text": "<exactly ${n} sentence(s) in ${langName}>" }`;
 
   const res = await client.chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'system', content: getSystemPrompt(language) },
       { role: 'user', content: prompt },
     ],
     response_format: { type: 'json_object' },

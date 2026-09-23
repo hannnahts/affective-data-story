@@ -95,6 +95,36 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+function LanguageToggle() {
+  const { language, setLanguage } = useEmotionStore();
+  return (
+    <div style={{ display: 'flex', gap: 2, background: '#f3f4f6', borderRadius: 8, padding: 2 }}>
+      {(['en', 'zh'] as const).map(lang => (
+        <button
+          key={lang}
+          onClick={() => setLanguage(lang)}
+          aria-pressed={language === lang}
+          aria-label={lang === 'en' ? 'English' : 'Chinese'}
+          style={{
+            padding: '4px 10px',
+            fontSize: 12,
+            fontWeight: language === lang ? 700 : 500,
+            border: 'none',
+            borderRadius: 6,
+            cursor: 'pointer',
+            background: language === lang ? '#fff' : 'transparent',
+            color: language === lang ? '#111827' : '#9ca3af',
+            boxShadow: language === lang ? '0 1px 3px rgba(0,0,0,0.10)' : 'none',
+            transition: 'all 0.15s',
+          }}
+        >
+          {lang === 'en' ? 'EN' : '中'}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function App() {
   const [splitPercent, setSplitPercent] = useState(40);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -129,22 +159,25 @@ export default function App() {
           <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#1a1a1a' }}>Affective Data Storytelling</p>
         </div>
 
-        <button
-          onClick={() => setSettingsOpen(p => !p)}
-          aria-label="Settings"
-          aria-expanded={settingsOpen}
-          style={{
-            background: settingsOpen ? '#f3f4f6' : 'none',
-            border: '1px solid',
-            borderColor: settingsOpen ? '#e5e7eb' : 'transparent',
-            borderRadius: 8, cursor: 'pointer',
-            padding: '6px 8px', color: '#6b7280',
-            display: 'flex', alignItems: 'center',
-            transition: 'all 0.15s',
-          }}
-        >
-          <GearIcon />
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <LanguageToggle />
+          <button
+            onClick={() => setSettingsOpen(p => !p)}
+            aria-label="Settings"
+            aria-expanded={settingsOpen}
+            style={{
+              background: settingsOpen ? '#f3f4f6' : 'none',
+              border: '1px solid',
+              borderColor: settingsOpen ? '#e5e7eb' : 'transparent',
+              borderRadius: 8, cursor: 'pointer',
+              padding: '6px 8px', color: '#6b7280',
+              display: 'flex', alignItems: 'center',
+              transition: 'all 0.15s',
+            }}
+          >
+            <GearIcon />
+          </button>
+        </div>
       </header>
 
       {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
