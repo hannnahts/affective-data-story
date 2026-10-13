@@ -202,7 +202,7 @@ h1, h2, h3, p { margin: 0; }
 }
 
 /* ─ Scrollbar — invisible by default, emotion-tinted on panel hover ────────── */
-::-webkit-scrollbar { width: 2px; }
+::-webkit-scrollbar { width: 1px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: transparent; border-radius: 9999px; }
 
