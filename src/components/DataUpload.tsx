@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import type { DragEvent } from 'react';
 import { useEmotionStore } from '../store/emotionStore';
 import { parseFile } from '../services/dataParser';
+import { DEMO_DATASETS } from '../data/demoDatasets';
 
 export function DataUpload() {
   const { dataset, setDataset, setDatasetDescription, setDatasetXColumn, setDatasetYColumns, setDatasetGroupBy } = useEmotionStore();
@@ -18,6 +19,17 @@ export function DataUpload() {
       : [...dataset.yColumns, col];
     if (next.length === 0) return;
     setDatasetYColumns(next);
+  };
+
+  const loadDemo = (demo: typeof DEMO_DATASETS[number]) => {
+    setParseError(null);
+    try {
+      const ds = parseFile(demo.content, demo.filename);
+      ds.description = demo.description;
+      setDataset(ds);
+    } catch (err) {
+      setParseError(err instanceof Error ? err.message : 'Failed to load demo');
+    }
   };
 
   const handleFile = (file: File) => {
@@ -283,6 +295,29 @@ export function DataUpload() {
         </div>
         <input ref={fileRef} type="file" accept=".csv,.json" aria-label="Select data file" style={{ display: 'none' }}
           onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+      </div>
+
+      {/* Demo datasets */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+        <span style={{ fontSize: 11, color: '#c4c9d4', whiteSpace: 'nowrap' }}>or try</span>
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          {DEMO_DATASETS.map(demo => (
+            <button
+              key={demo.name}
+              onClick={() => loadDemo(demo)}
+              style={{
+                fontSize: 11, padding: '2px 8px', borderRadius: 5, cursor: 'pointer',
+                border: '1px solid #e5e7eb', background: '#fff',
+                color: '#6b7280', fontWeight: 500,
+                transition: 'all 0.12s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#a5b4fc'; e.currentTarget.style.color = '#4338ca'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.color = '#6b7280'; }}
+            >
+              {demo.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       {parseError && (
