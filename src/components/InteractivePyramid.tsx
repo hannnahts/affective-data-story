@@ -160,23 +160,53 @@ export function InteractivePyramid({ segmentConfigs, onUpdate, onCommit, regener
         onMouseUp={onSVGUp}
         onMouseLeave={onSVGUp}
       >
+        <defs>
+          {/* Spectral gradient through the 5 phase colors, left→right */}
+          <linearGradient id="curveGrad" gradientUnits="userSpaceOnUse" x1="-10" y1="0" x2="430" y2="0">
+            <stop offset="10%" stopColor="#9ca3af" />
+            <stop offset="28%" stopColor="#f59e0b" />
+            <stop offset="50%" stopColor="#ef4444" />
+            <stop offset="72%" stopColor="#3b82f6" />
+            <stop offset="90%" stopColor="#8b5cf6" />
+          </linearGradient>
+          <linearGradient id="fillGrad" gradientUnits="userSpaceOnUse" x1="-10" y1="0" x2="430" y2="0">
+            <stop offset="10%" stopColor="#9ca3af" stopOpacity="0.18" />
+            <stop offset="28%" stopColor="#f59e0b" stopOpacity="0.13" />
+            <stop offset="50%" stopColor="#ef4444" stopOpacity="0.13" />
+            <stop offset="72%" stopColor="#3b82f6" stopOpacity="0.13" />
+            <stop offset="90%" stopColor="#8b5cf6" stopOpacity="0.18" />
+          </linearGradient>
+          {/* Glow blur layer for the curve */}
+          <filter id="curveGlow" x="-2%" y="-40%" width="104%" height="180%">
+            <feGaussianBlur stdDeviation="3.5" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+          {/* Ambient glow for nodes */}
+          <filter id="nodeGlow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+
         {/* Y-axis grid lines */}
         {[0, 25, 50, 75, 100].map(v => {
           const y = intensityToY(v);
           return (
             <g key={v}>
               <line x1={0} y1={y} x2={SVG_W} y2={y}
-                stroke={v === 0 || v === 100 ? '#e5e7eb' : '#f3f4f6'}
-                strokeWidth="1" strokeDasharray={v === 50 ? '3 3' : undefined} />
+                stroke={v === 50 ? '#ebebeb' : '#f5f5f5'}
+                strokeWidth="1" strokeDasharray={v === 50 ? '4 4' : undefined} />
               <text x={SVG_W - 2} y={y - 2} fontSize="7" fill="#d1d5db" textAnchor="end">{v}</text>
             </g>
           );
         })}
 
-        {/* Filled area under curve */}
-        <path d={fill} fill="#f1f5f9" stroke="none" opacity="0.7" />
+        {/* Spectral fill */}
+        <path d={fill} fill="url(#fillGrad)" stroke="none" />
+        {/* Glow layer behind curve */}
+        <path d={curve} fill="none" stroke="url(#curveGrad)" strokeWidth="6" strokeLinejoin="round" opacity="0.22" filter="url(#curveGlow)" />
         {/* Curve */}
-        <path d={curve} fill="none" stroke="#cbd5e1" strokeWidth="2" strokeLinejoin="round" />
+        <path d={curve} fill="none" stroke="url(#curveGrad)" strokeWidth="2.5" strokeLinejoin="round" />
 
         {/* Phase label baseline */}
         <line x1={0} y1={LABEL_Y - 6} x2={SVG_W} y2={LABEL_Y - 6} stroke="#f0f0f0" strokeWidth="1" />
@@ -205,25 +235,32 @@ export function InteractivePyramid({ segmentConfigs, onUpdate, onCommit, regener
 
               {/* Vertical connector to baseline */}
               <line x1={pos.x} y1={pos.y + 7} x2={pos.x} y2={LABEL_Y - 8}
-                stroke={meta.color} strokeWidth="1" opacity="0.3"
-                strokeDasharray="2 2" />
+                stroke={meta.color} strokeWidth="1" opacity={isDrag ? 0.55 : 0.22}
+                strokeDasharray="2 3" />
 
-              {/* Glow / regen pulse */}
-              {isDrag && <circle cx={pos.x} cy={pos.y} r={14} fill={meta.color} opacity={0.12} />}
+              {/* Permanent ambient glow */}
+              <circle cx={pos.x} cy={pos.y} r={13}
+                fill={meta.color} opacity={isDrag ? 0.20 : 0.09}
+                filter="url(#nodeGlow)" />
+
+              {/* Regen pulse */}
               {isRegen && (
                 <circle cx={pos.x} cy={pos.y} r={13} fill="none" stroke={meta.color} strokeWidth="1.5" opacity="0.5">
-                  <animate attributeName="r" values="9;15;9" dur="1.2s" repeatCount="indefinite" />
+                  <animate attributeName="r" values="9;16;9" dur="1.2s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.6;0;0.6" dur="1.2s" repeatCount="indefinite" />
                 </circle>
               )}
 
-              {/* Node */}
-              <circle
-                cx={pos.x} cy={pos.y} r={7}
+              {/* Node — white fill with phase-tinted center */}
+              <circle cx={pos.x} cy={pos.y} r={7}
                 fill={isDrag ? meta.color : '#fff'}
                 stroke={meta.color}
                 strokeWidth={isDrag ? 2.5 : 2}
               />
+              {!isDrag && (
+                <circle cx={pos.x} cy={pos.y} r={3}
+                  fill={meta.color} opacity={0.45} />
+              )}
 
               {/* Phase label at baseline */}
               <text x={ZONE_CENTERS[idx]} y={LABEL_Y}
