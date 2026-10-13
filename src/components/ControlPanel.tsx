@@ -86,23 +86,21 @@ export function ControlPanel() {
               return (
                 <button
                   key={emo.id}
-                  className="btn-emotion"
+                  className={active ? 'btn-emotion btn-emotion-active' : 'btn-emotion'}
                   onClick={() => setEmotion(emo.id as EmotionId)}
                   aria-pressed={active}
                   aria-label={`Select emotion: ${emo.label}`}
                   style={{
+                    '--btn-emo-color': emo.hex,
                     padding: '10px 4px',
                     borderRadius: 10,
                     cursor: 'pointer',
                     border: active ? `2px solid ${emo.hex}` : '1.5px solid #e9ebee',
                     background: active ? emo.bg : '#ffffff',
-                    boxShadow: active
-                      ? `0 3px 12px ${emo.hex}28`
-                      : '0 1px 3px rgba(0,0,0,0.04)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                  }}
+                  } as React.CSSProperties}
                 >
                   <span style={{
                     fontSize: 13, fontWeight: active ? 700 : 500,

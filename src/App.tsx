@@ -3,6 +3,7 @@ import { ControlPanel } from './components/ControlPanel';
 import { StoryCanvas } from './components/StoryCanvas';
 import { useEmotionStore } from './store/emotionStore';
 import { useT } from './i18n/useT';
+import { EMOTION_META } from './data/mockData';
 
 function GearIcon() {
   return (
@@ -130,6 +131,8 @@ function LanguageToggle() {
 
 export default function App() {
   const t = useT();
+  const { selectedEmotion } = useEmotionStore();
+  const activeEmo = EMOTION_META.find(e => e.id === selectedEmotion)!;
   const [splitPercent, setSplitPercent] = useState(40);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
@@ -157,12 +160,33 @@ export default function App() {
   }, []);
 
   return (
-    <div style={{ height: '100vh', background: '#f9fafb', display: 'flex', flexDirection: 'column', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', overflow: 'hidden' }}>
+    <>
+      {/* Emotion-reactive ambient orbs */}
+      <div className="ambient-orb" style={{
+        width: 650, height: 650, top: -220, left: -180,
+        background: activeEmo.hex, filter: 'blur(110px)', opacity: 0.13,
+        animation: 'floatOrb1 22s ease-in-out infinite', zIndex: 0,
+      }} />
+      <div className="ambient-orb" style={{
+        width: 520, height: 520, bottom: -160, right: -120,
+        background: activeEmo.hex, filter: 'blur(95px)', opacity: 0.11,
+        animation: 'floatOrb2 28s ease-in-out infinite', zIndex: 0,
+      }} />
+      <div className="ambient-orb" style={{
+        width: 380, height: 380, top: '42%', left: '52%',
+        background: activeEmo.bg, filter: 'blur(80px)', opacity: 0.20,
+        animation: 'floatOrb3 19s ease-in-out infinite', zIndex: 0,
+      }} />
+      {/* Film grain */}
+      <div className="noise-overlay" />
+
+    <div style={{ position: 'relative', zIndex: 2, height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <header style={{
         background: 'rgba(247,241,232,0.82)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(0,0,0,0.07)',
+        borderBottom: `1px solid ${activeEmo.hex}28`,
+        boxShadow: `0 1px 0 ${activeEmo.hex}15, 0 2px 16px rgba(0,0,0,0.03)`,
         padding: '11px 28px',
         flexShrink: 0,
         display: 'flex',
@@ -171,9 +195,16 @@ export default function App() {
         position: 'sticky',
         top: 0,
         zIndex: 40,
+        transition: 'border-color 2s ease, box-shadow 2s ease',
       }}>
         <div>
-          <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#0d0d0d', letterSpacing: '-0.02em' }}>{t.appTitle}</p>
+          <p style={{
+            margin: 0, fontSize: 14, fontWeight: 700, letterSpacing: '-0.02em',
+            background: `linear-gradient(120deg, #0d0d0d 0%, ${activeEmo.hex} 140%)`,
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            transition: 'background 1.8s ease',
+          }}>{t.appTitle}</p>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -200,7 +231,12 @@ export default function App() {
       {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
 
       <main ref={mainRef} style={{ display: 'flex', flex: 1, overflow: 'hidden', userSelect: 'none' }}>
-        <aside style={{ width: `${splitPercent}%`, flexShrink: 0, background: '#fff', padding: 16, overflowY: 'auto' }}>
+        <aside style={{
+          width: `${splitPercent}%`, flexShrink: 0, padding: 16, overflowY: 'auto',
+          background: `linear-gradient(180deg, ${activeEmo.bg}55 0%, rgba(255,255,255,0.92) 28%)`,
+          backdropFilter: 'blur(2px)',
+          transition: 'background 2s ease',
+        }}>
           <ControlPanel />
         </aside>
 
@@ -244,5 +280,6 @@ export default function App() {
         </section>
       </main>
     </div>
+    </>
   );
 }

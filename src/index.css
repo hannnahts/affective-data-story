@@ -132,6 +132,54 @@ h1, h2, h3, p { margin: 0; }
   overflow: hidden;
 }
 
+/* ─ Floating ambient orbs ─────────────────────────────────────────────────── */
+@keyframes floatOrb1 {
+  0%, 100% { transform: translateY(0px)   translateX(0px); }
+  25%       { transform: translateY(-55px) translateX(40px); }
+  50%       { transform: translateY(-20px) translateX(-30px); }
+  75%       { transform: translateY(45px)  translateX(20px); }
+}
+@keyframes floatOrb2 {
+  0%, 100% { transform: translateY(0px)  translateX(0px); }
+  30%       { transform: translateY(65px) translateX(-55px); }
+  65%       { transform: translateY(-40px) translateX(45px); }
+}
+@keyframes floatOrb3 {
+  0%, 100% { transform: translateY(0px)  translateX(0px)  scale(1); }
+  40%       { transform: translateY(-80px) translateX(25px) scale(1.10); }
+  80%       { transform: translateY(55px)  translateX(-20px) scale(0.92); }
+}
+
+.ambient-orb {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+  transition: background-color 2.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─ Film grain overlay ─────────────────────────────────────────────────────── */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.028;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* ─ Emotion button pulse ring ──────────────────────────────────────────────── */
+@keyframes emotionRingPulse {
+  0%   { box-shadow: 0 0 0 0   color-mix(in srgb, var(--btn-emo-color, #6366f1) 55%, transparent); }
+  75%  { box-shadow: 0 0 0 8px color-mix(in srgb, var(--btn-emo-color, #6366f1)  0%, transparent); }
+  100% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--btn-emo-color, #6366f1)  0%, transparent); }
+}
+.btn-emotion-active {
+  animation: emotionRingPulse 2.4s ease-out infinite !important;
+}
+
 /* Scrollbar refinement */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
