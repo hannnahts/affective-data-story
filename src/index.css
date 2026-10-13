@@ -201,8 +201,21 @@ h1, h2, h3, p { margin: 0; }
   animation: emotionRingPulse 2.4s ease-out infinite !important;
 }
 
-/* Scrollbar refinement */
-::-webkit-scrollbar { width: 5px; }
+/* ─ Scrollbar — invisible by default, emotion-tinted on panel hover ────────── */
+::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.22); }
+::-webkit-scrollbar-thumb { background: transparent; border-radius: 9999px; }
+
+aside:hover::-webkit-scrollbar-thumb,
+section:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--emo-hex) 45%, rgba(0,0,0,0.10));
+}
+
+/* Firefox */
+aside, section {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+aside:hover, section:hover {
+  scrollbar-color: color-mix(in srgb, var(--emo-hex) 45%, rgba(0,0,0,0.10)) transparent;
+}
