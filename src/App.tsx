@@ -182,7 +182,7 @@ export default function App() {
 
     <div style={{ position: 'relative', zIndex: 2, height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <header style={{
-        background: 'rgba(247,241,232,0.82)',
+        background: 'rgba(240,240,238,0.88)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderBottom: `1px solid ${activeEmo.hex}28`,
@@ -200,10 +200,7 @@ export default function App() {
         <div>
           <p style={{
             margin: 0, fontSize: 14, fontWeight: 700, letterSpacing: '-0.02em',
-            display: 'inline-block',
-            background: `linear-gradient(120deg, #0d0d0d 20%, ${activeEmo.hex} 100%)`,
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
+            color: '#0d0d0d',
           }}>{t.appTitle}</p>
         </div>
 
