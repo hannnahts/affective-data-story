@@ -65,26 +65,17 @@ export function ControlPanel() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-      <div style={{
-        background: '#ffffff',
-        border: '1.5px solid #d1d5db',
-        borderRadius: 14,
-        padding: '16px 16px',
-        boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
-      }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', letterSpacing: '0.01em', marginBottom: 12 }}>
-          {t.dataset}
+      <div className="card-shell fade-up fade-up-d1">
+        <div className="card-inner" style={{ padding: '16px 16px' }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', letterSpacing: '0.01em', marginBottom: 12 }}>
+            {t.dataset}
+          </div>
+          <DataUpload />
         </div>
-        <DataUpload />
       </div>
 
-      <div style={{
-        background: '#f9fafb',
-        border: '1.5px solid #e5e7eb',
-        borderRadius: 14,
-        padding: '14px 16px',
-        display: 'flex', flexDirection: 'column', gap: 14,
-      }}>
+      <div className="card-shell fade-up fade-up-d2" style={{ background: 'rgba(249,250,251,0.8)' }}>
+        <div className="card-inner" style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
         {/* Emotion Target */}
         <div>
@@ -95,6 +86,7 @@ export function ControlPanel() {
               return (
                 <button
                   key={emo.id}
+                  className="btn-emotion"
                   onClick={() => setEmotion(emo.id as EmotionId)}
                   aria-pressed={active}
                   aria-label={`Select emotion: ${emo.label}`}
@@ -102,7 +94,6 @@ export function ControlPanel() {
                     padding: '10px 4px',
                     borderRadius: 10,
                     cursor: 'pointer',
-                    transition: 'all 0.18s',
                     border: active ? `2px solid ${emo.hex}` : '1.5px solid #e9ebee',
                     background: active ? emo.bg : '#ffffff',
                     boxShadow: active
@@ -162,6 +153,7 @@ export function ControlPanel() {
           />
         </div>
 
+        </div>
       </div>
 
       {error && (
@@ -171,19 +163,19 @@ export function ControlPanel() {
       )}
 
       <button
+        className="btn-generate fade-up fade-up-d3"
         onClick={generate}
         disabled={isLoading}
         aria-busy={isLoading}
         aria-label={isLoading ? (loadingStage ? loadingLabel[loadingStage] : t.processing) : isLiveMode ? t.generateAria : t.previewAria}
         style={{
-          width: '100%', padding: '12px 0', fontSize: 14, fontWeight: 600,
+          width: '100%', padding: '12px 0', fontSize: 14, fontWeight: 700,
           border: `1.5px solid ${isLoading ? '#e5e7eb' : activeEmo.hex}`,
           borderRadius: 12,
           background: isLoading ? '#f9fafb' : activeEmo.bg,
           cursor: isLoading ? 'not-allowed' : 'pointer',
-          transition: 'all 0.15s',
           color: isLoading ? '#9ca3af' : activeEmo.textColor,
-          letterSpacing: '0.01em',
+          letterSpacing: '0.02em',
         }}
       >
         {isLoading

@@ -1,15 +1,15 @@
+/* ─ Design tokens ─────────────────────────────────────────────────────────── */
 :root {
-  --bg: #f4eee3;
-  --text: #2f231a;
-  --muted: #6d5a49;
-  --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  --sans:
-    "Avenir Next", "Segoe UI", "PingFang SC", "Hiragino Sans GB",
-    "Microsoft YaHei", sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Avenir Next', system-ui, sans-serif;
+  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
-  color: var(--text);
-  background: var(--bg);
-  font: 16px/1.5 var(--sans);
+  /* Spring easing — simulates real-world mass */
+  --spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --spring-fast: cubic-bezier(0.22, 1, 0.36, 1);
+
+  color: #1a1a1a;
+  background: #f6f0e6;
+  font: 16px/1.5 var(--font-sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -18,62 +18,122 @@
 
 *,
 *::before,
-*::after {
-  box-sizing: border-box;
-}
+*::after { box-sizing: border-box; }
 
-html {
-  min-height: 100%;
-}
+html { min-height: 100%; }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100svh;
+  font-family: var(--font-sans);
   background:
-    radial-gradient(
-      circle at top left,
-      rgba(243, 163, 60, 0.18),
-      transparent 32%
-    ),
-    radial-gradient(
-      circle at right 20%,
-      rgba(85, 184, 167, 0.16),
-      transparent 30%
-    ),
-    linear-gradient(180deg, #f6f0e6 0%, #efe4d3 100%);
+    radial-gradient(ellipse 60% 40% at 10% 0%,  rgba(243,163,60,0.14) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 35% at 90% 20%,  rgba(85,184,167,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 60% at 50% 100%, rgba(168,132,255,0.07) 0%, transparent 70%),
+    linear-gradient(180deg, #f7f1e8 0%, #ede3d2 100%);
 }
 
-body,
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
+body, button, input, select, textarea { font: inherit; }
+button, input, select, textarea { color: inherit; }
 
-button,
-input,
-select,
-textarea {
-  color: inherit;
-}
+#root { min-height: 100svh; }
+h1, h2, h3, p { margin: 0; }
 
-#root {
-  min-height: 100svh;
-}
-
-h1,
-h2,
-h3,
-p {
-  margin: 0;
-}
-
-/* Accessible focus ring — visible only via keyboard */
+/* ─ Focus ring ─────────────────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid #6366f1;
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
+/* ─ Entry animation ─────────────────────────────────────────────────────────── */
+@keyframes fadeUpIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.fade-up {
+  animation: fadeUpIn 0.65s var(--spring) both;
+}
+.fade-up-d1 { animation-delay: 0.05s; }
+.fade-up-d2 { animation-delay: 0.10s; }
+.fade-up-d3 { animation-delay: 0.16s; }
+.fade-up-d4 { animation-delay: 0.22s; }
+.fade-up-d5 { animation-delay: 0.28s; }
+
+/* ─ Generate button — spring hover physics ─────────────────────────────────── */
+.btn-generate {
+  will-change: transform;
+  transition:
+    transform 0.25s var(--spring),
+    box-shadow 0.25s var(--spring),
+    background 0.18s var(--spring-fast),
+    color 0.18s var(--spring-fast);
+}
+.btn-generate:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+}
+.btn-generate:active:not(:disabled) {
+  transform: scale(0.977) translateY(0px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* ─ Emotion target buttons ──────────────────────────────────────────────────── */
+.btn-emotion {
+  transition:
+    transform 0.2s var(--spring),
+    box-shadow 0.2s var(--spring),
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+.btn-emotion:hover {
+  transform: translateY(-1px) scale(1.02);
+}
+.btn-emotion:active {
+  transform: scale(0.96);
+}
+
+/* ─ Demo & small buttons ────────────────────────────────────────────────────── */
+.btn-subtle {
+  transition: all 0.18s var(--spring-fast);
+}
+.btn-subtle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+.btn-subtle:active {
+  transform: scale(0.97);
+}
+
+/* ─ Premium card shell ───────────────────────────────────────────────────────── */
+.card-shell {
+  border-radius: 22px;
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.85);
+  box-shadow:
+    0 1px 1px rgba(0,0,0,0.03),
+    0 4px 14px rgba(0,0,0,0.05),
+    0 24px 48px rgba(0,0,0,0.04);
+  padding: 3px;
+}
+.card-inner {
+  background: #ffffff;
+  border-radius: 19px;
+  overflow: hidden;
+}
+
+/* Scrollbar refinement */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.22); }

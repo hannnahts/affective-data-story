@@ -306,15 +306,13 @@ export function DataUpload() {
           {DEMO_DATASETS.map(demo => (
             <button
               key={demo.name}
+              className="btn-subtle"
               onClick={() => loadDemo(demo)}
               style={{
-                fontSize: 11, padding: '2px 8px', borderRadius: 5, cursor: 'pointer',
-                border: '1px solid #e5e7eb', background: '#fff',
+                fontSize: 11, padding: '2px 8px', borderRadius: 20, cursor: 'pointer',
+                border: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.03)',
                 color: '#6b7280', fontWeight: 500,
-                transition: 'all 0.12s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#a5b4fc'; e.currentTarget.style.color = '#4338ca'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.color = '#6b7280'; }}
             >
               {demo.name}
             </button>

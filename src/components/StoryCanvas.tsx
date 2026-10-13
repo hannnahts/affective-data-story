@@ -83,8 +83,8 @@ function SegmentCard({ seg, index, total, isActive, isRegenerating, onSelect, on
       onMouseLeave={() => onHoverChange?.(false)}
       style={{
         display: 'flex', gap: 0,
-        animation: 'fadeIn 0.4s ease-out both',
-        animationDelay: `${index * 0.08}s`,
+        animation: 'fadeUpIn 0.55s cubic-bezier(0.32, 0.72, 0, 1) both',
+        animationDelay: `${index * 0.07}s`,
         cursor: onSelect ? 'pointer' : 'default',
         borderRadius: 8,
         background: isActive ? `${phase.color}0d` : 'transparent',
@@ -178,7 +178,7 @@ export function StoryCanvas() {
     const text = [
       title,
       '',
-      ...segments.map(s => `[${PHASE_META[s.phase].label}]\n${s.text}`),
+      ...segments.map(s => `[${phaseLabels[s.phase] ?? s.phase}]\n${s.text}`),
     ].join('\n\n');
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
@@ -198,14 +198,8 @@ export function StoryCanvas() {
     return { chartData: raw, effectiveYColumns: dataset?.yColumns, xLabel: dataset?.xColumn };
   }, [dataset, selectedEmotion]);
 
-  const card: React.CSSProperties = {
-    background: '#fff', borderRadius: 16, border: '1px solid #f0f0f0',
-    overflow: 'hidden', marginBottom: 12,
-  };
-  const chartCard: React.CSSProperties = {
-    background: '#fff', borderRadius: 16, border: '1px solid #f0f0f0',
-    overflow: 'visible', marginBottom: 12,
-  };
+  const card: React.CSSProperties = { marginBottom: 12 };
+  const chartCard: React.CSSProperties = { marginBottom: 12 };
   const cardHeader: React.CSSProperties = {
     padding: '10px 16px', display: 'flex', justifyContent: 'space-between',
     alignItems: 'center', borderBottom: '1px solid #f0f0f0',
@@ -256,80 +250,84 @@ export function StoryCanvas() {
           </p>
         </div>
 
-        {/* Narrative */}
-        <div style={card}>
-          <div style={{ ...cardHeader, background: emo.bg }}>
-            <span style={{ ...sectionLabel, color: emo.textColor }}>{t.affectiveNarrative}</span>
-            <span style={{ fontSize: 11, color: emo.textColor, opacity: 0.7, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '55%' }}>
-              {emo.label} · {analysis.narrativeArc.replace('_', ' ')} {t.arc}
-            </span>
-          </div>
-          <div style={{ padding: '16px 16px 4px' }}>
-            {segments.map((seg, i) => (
-              <SegmentCard
-                key={i} seg={seg} index={i} total={segments.length}
-                phaseLabel={phaseLabels[seg.phase] ?? seg.phase}
-                isActive={activeSegIdx === i}
-                isRegenerating={regeneratingPhase === seg.phase}
-                onSelect={() => setActiveSegIdx(activeSegIdx === i ? null : i)}
-                onHoverChange={(h) => setHoveredSegIdx(h ? i : null)}
-              />
-            ))}
-          </div>
-          {/* Copy button */}
-          <div style={{ padding: '8px 16px 12px', display: 'flex', justifyContent: 'flex-end' }}>
-            <button
-              onClick={copyNarrative}
-              title="Copy narrative text"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 5,
-                padding: '5px 12px', borderRadius: 7, cursor: 'pointer',
-                fontSize: 11, fontWeight: 600,
-                border: copied ? '1px solid #10b981' : '1px solid #e5e7eb',
-                background: copied ? '#f0fdf4' : '#f9fafb',
-                color: copied ? '#059669' : '#6b7280',
-                transition: 'all 0.2s',
-              }}
-            >
-              {copied ? (
-                <>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  {t.copied}
-                </>
-              ) : (
-                <>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" />
-                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                  </svg>
-                  {t.copy}
-                </>
-              )}
-            </button>
+        {/* Narrative — double-bezel card */}
+        <div className="card-shell fade-up fade-up-d1" style={card}>
+          <div className="card-inner">
+            <div style={{ ...cardHeader, background: emo.bg }}>
+              <span style={{ ...sectionLabel, color: emo.textColor }}>{t.affectiveNarrative}</span>
+              <span style={{ fontSize: 11, color: emo.textColor, opacity: 0.7, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '55%' }}>
+                {emo.label} · {analysis.narrativeArc.replace('_', ' ')} {t.arc}
+              </span>
+            </div>
+            <div style={{ padding: '16px 16px 4px' }}>
+              {segments.map((seg, i) => (
+                <SegmentCard
+                  key={i} seg={seg} index={i} total={segments.length}
+                  phaseLabel={phaseLabels[seg.phase] ?? seg.phase}
+                  isActive={activeSegIdx === i}
+                  isRegenerating={regeneratingPhase === seg.phase}
+                  onSelect={() => setActiveSegIdx(activeSegIdx === i ? null : i)}
+                  onHoverChange={(h) => setHoveredSegIdx(h ? i : null)}
+                />
+              ))}
+            </div>
+            {/* Copy button */}
+            <div style={{ padding: '8px 16px 12px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                className="btn-subtle"
+                onClick={copyNarrative}
+                title="Copy narrative text"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  padding: '5px 14px', borderRadius: 20, cursor: 'pointer',
+                  fontSize: 11, fontWeight: 600,
+                  border: copied ? '1px solid #10b981' : '1px solid rgba(0,0,0,0.08)',
+                  background: copied ? '#f0fdf4' : 'rgba(0,0,0,0.03)',
+                  color: copied ? '#059669' : '#6b7280',
+                }}
+              >
+                {copied ? (
+                  <>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    {t.copied}
+                  </>
+                ) : (
+                  <>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" />
+                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                    </svg>
+                    {t.copy}
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Chart */}
-        <div style={chartCard}>
-          <div style={{ ...cardHeader, borderRadius: '16px 16px 0 0', overflow: 'hidden' }}>
-            <span style={{ ...sectionLabel, color: '#9ca3af' }}>{t.visualEncoding}</span>
-            <span style={{
-              fontSize: 11, padding: '2px 10px', borderRadius: 100,
-              background: emo.bg, color: emo.textColor,
-            }}>
-              {visualProps.chartForm}
-            </span>
-          </div>
-          <div style={{ padding: '12px 16px 8px' }}>
-            <EmotionChart data={chartData} visualProps={visualProps} annotations={visualProps.annotations} activeRange={null} hoveredRange={segmentHoverRange(hoveredSegIdx, segments, chartData.length)} xLabel={xLabel} yLabel={yLabel} yColumns={effectiveYColumns} />
+        {/* Chart — double-bezel, overflow visible for SVG */}
+        <div className="card-shell fade-up fade-up-d2" style={{ ...chartCard, overflow: 'visible' }}>
+          <div style={{ background: '#fff', borderRadius: 19, overflow: 'visible' }}>
+            <div style={{ ...cardHeader, borderRadius: '19px 19px 0 0', overflow: 'hidden' }}>
+              <span style={{ ...sectionLabel, color: '#9ca3af' }}>{t.visualEncoding}</span>
+              <span style={{
+                fontSize: 11, padding: '2px 10px', borderRadius: 100,
+                background: emo.bg, color: emo.textColor,
+              }}>
+                {visualProps.chartForm}
+              </span>
+            </div>
+            <div style={{ padding: '12px 16px 8px' }}>
+              <EmotionChart data={chartData} visualProps={visualProps} annotations={visualProps.annotations} activeRange={null} hoveredRange={segmentHoverRange(hoveredSegIdx, segments, chartData.length)} xLabel={xLabel} yLabel={yLabel} yColumns={effectiveYColumns} />
+            </div>
           </div>
         </div>
 
         {/* JSON output */}
-        <details style={{ background: '#f9fafb', borderRadius: 12, padding: 14 }}>
-          <summary style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#9ca3af', cursor: 'pointer', marginBottom: 8 }}>
+        <details className="fade-up fade-up-d3" style={{ background: 'rgba(0,0,0,0.03)', borderRadius: 14, padding: 14, border: '1px solid rgba(0,0,0,0.06)' }}>
+          <summary style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.10em', color: '#b0b7c3', cursor: 'pointer', marginBottom: 8 }}>
             {t.pipelineOutput}
           </summary>
           <pre style={{ margin: 0, fontFamily: 'monospace', fontSize: 11, color: '#6b7280', overflowX: 'auto', lineHeight: 1.6 }}>

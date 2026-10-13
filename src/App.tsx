@@ -158,9 +158,22 @@ export default function App() {
 
   return (
     <div style={{ height: '100vh', background: '#f9fafb', display: 'flex', flexDirection: 'column', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', overflow: 'hidden' }}>
-      <header style={{ background: '#fff', borderBottom: '1px solid #f0f0f0', padding: '10px 24px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <header style={{
+        background: 'rgba(247,241,232,0.82)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(0,0,0,0.07)',
+        padding: '11px 28px',
+        flexShrink: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        position: 'sticky',
+        top: 0,
+        zIndex: 40,
+      }}>
         <div>
-          <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#1a1a1a' }}>{t.appTitle}</p>
+          <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#0d0d0d', letterSpacing: '-0.02em' }}>{t.appTitle}</p>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

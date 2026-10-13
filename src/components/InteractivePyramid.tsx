@@ -2,13 +2,13 @@ import { useState, useRef, useCallback } from 'react';
 import type { NarrativePhase, SegmentConfig } from '../types/emotion';
 import { useT } from '../i18n/useT';
 
-const PHASE_COLORS: Array<{ phase: NarrativePhase; color: string }> = [
-  { phase: 'opening',    color: '#9ca3af' },
-  { phase: 'rising',     color: '#f59e0b' },
-  { phase: 'climax',     color: '#ef4444' },
-  { phase: 'resolution', color: '#3b82f6' },
-  { phase: 'coda',       color: '#8b5cf6' },
-];
+const PHASE_DEFAULT_COLORS: Record<NarrativePhase, string> = {
+  opening:    '#9ca3af',
+  rising:     '#f59e0b',
+  climax:     '#ef4444',
+  resolution: '#3b82f6',
+  coda:       '#8b5cf6',
+};
 
 const SVG_W = 420;
 const SVG_H = 180;
@@ -73,11 +73,11 @@ export function InteractivePyramid({ segmentConfigs, onUpdate, onCommit, regener
   const t = useT();
 
   const PHASE_META: Array<{ phase: NarrativePhase; label: string; color: string }> = [
-    { phase: 'opening',    label: t.pyramidPhaseExp,       color: '#9ca3af' },
-    { phase: 'rising',     label: t.pyramidPhaseRising,    color: '#f59e0b' },
-    { phase: 'climax',     label: t.pyramidPhaseClimax,    color: '#ef4444' },
-    { phase: 'resolution', label: t.pyramidPhaseFalling,   color: '#3b82f6' },
-    { phase: 'coda',       label: t.pyramidPhaseDenouement, color: '#8b5cf6' },
+    { phase: 'opening',    label: t.pyramidPhaseExp,        color: PHASE_DEFAULT_COLORS.opening },
+    { phase: 'rising',     label: t.pyramidPhaseRising,     color: PHASE_DEFAULT_COLORS.rising },
+    { phase: 'climax',     label: t.pyramidPhaseClimax,     color: PHASE_DEFAULT_COLORS.climax },
+    { phase: 'resolution', label: t.pyramidPhaseFalling,    color: PHASE_DEFAULT_COLORS.resolution },
+    { phase: 'coda',       label: t.pyramidPhaseDenouement, color: PHASE_DEFAULT_COLORS.coda },
   ];
   const [drag, setDrag] = useState<DragState | null>(null);
   // live visual positions during drag (smooth, unclamped to discrete)
