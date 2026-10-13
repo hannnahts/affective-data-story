@@ -224,10 +224,11 @@ export function StoryCanvas() {
       <div style={{
         minHeight: 420, display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
-        border: '1.5px dashed #e5e7eb', borderRadius: 16,
+        border: '1.5px dashed rgba(0,0,0,0.12)', borderRadius: 16,
+        gap: 8,
       }}>
-        <p style={{ margin: 0, fontSize: 14, color: '#9ca3af', fontWeight: 500 }}>{t.storyCanvas}</p>
-        <p style={{ margin: '4px 0 0', fontSize: 12, color: '#d1d5db' }}>{t.storyCanvasHint}</p>
+        <p style={{ margin: 0, fontSize: 18, color: '#374151', fontWeight: 700, letterSpacing: '-0.02em' }}>{t.storyCanvas}</p>
+        <p style={{ margin: 0, fontSize: 13, color: '#6b7280', fontWeight: 400 }}>{t.storyCanvasHint}</p>
       </div>
     );
   }

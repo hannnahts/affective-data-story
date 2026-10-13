@@ -182,7 +182,7 @@ export default function App() {
 
     <div style={{ position: 'relative', zIndex: 2, height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <header style={{
-        background: 'rgba(240,240,238,0.88)',
+        background: 'rgba(255,255,255,0.88)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderBottom: `1px solid ${activeEmo.hex}28`,

@@ -27,7 +27,7 @@ body {
   min-width: 320px;
   min-height: 100svh;
   font-family: var(--font-sans);
-  background: #f0f0ee;
+  background: #ffffff;
 }
 
 body, button, input, select, textarea { font: inherit; }
