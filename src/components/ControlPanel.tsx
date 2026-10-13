@@ -95,7 +95,7 @@ export function ControlPanel() {
                     padding: '10px 4px',
                     borderRadius: 10,
                     cursor: 'pointer',
-                    border: active ? `2px solid ${emo.hex}` : '1.5px solid #e9ebee',
+                    border: active ? `2px solid ${emo.hex}` : `1.5px solid ${emo.hex}28`,
                     background: active ? emo.bg : '#ffffff',
                     display: 'flex',
                     alignItems: 'center',

@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { ControlPanel } from './components/ControlPanel';
 import { StoryCanvas } from './components/StoryCanvas';
 import { useEmotionStore } from './store/emotionStore';
@@ -133,6 +133,12 @@ export default function App() {
   const t = useT();
   const { selectedEmotion } = useEmotionStore();
   const activeEmo = EMOTION_META.find(e => e.id === selectedEmotion)!;
+
+  // Drive all CSS color-mix() borders from a single typed custom property
+  useEffect(() => {
+    document.documentElement.style.setProperty('--emo-hex', activeEmo.hex);
+  }, [activeEmo.hex]);
+
   const [splitPercent, setSplitPercent] = useState(40);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
@@ -267,8 +273,8 @@ export default function App() {
             ))}
           </div>
           <style>{`
-            div[title="Drag to resize"]:hover .divider-track { background: #a5b4fc; }
-            div[title="Drag to resize"]:hover div > div { background: #818cf8 !important; }
+            div[title="Drag to resize"]:hover .divider-track { background: color-mix(in srgb, var(--emo-hex) 55%, white); }
+            div[title="Drag to resize"]:hover div > div { background: color-mix(in srgb, var(--emo-hex) 75%, white) !important; }
           `}</style>
         </div>
 

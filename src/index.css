@@ -1,5 +1,13 @@
+/* ─ Register --emo-hex as a typed property so CSS transitions interpolate it ── */
+@property --emo-hex {
+  syntax: '<color>';
+  initial-value: #9ca3af;
+  inherits: true;
+}
+
 /* ─ Design tokens ─────────────────────────────────────────────────────────── */
 :root {
+  --emo-hex: #9ca3af;
   --font-sans: 'Plus Jakarta Sans', 'Avenir Next', system-ui, sans-serif;
   --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
@@ -7,8 +15,11 @@
   --spring: cubic-bezier(0.32, 0.72, 0, 1);
   --spring-fast: cubic-bezier(0.22, 1, 0.36, 1);
 
+  /* Transition the color var itself — everything that uses it follows */
+  transition: --emo-hex 1.6s ease;
+
   color: #1a1a1a;
-  background: #f6f0e6;
+  background: #ffffff;
   font: 16px/1.5 var(--font-sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -111,21 +122,35 @@ h1, h2, h3, p { margin: 0; }
   transform: scale(0.97);
 }
 
-/* ─ Premium card shell ───────────────────────────────────────────────────────── */
+/* ─ Premium card shell — emotion-reactive gradient border ────────────────────── */
 .card-shell {
   border-radius: 22px;
-  background: rgba(255,255,255,0.55);
-  border: 1px solid rgba(255,255,255,0.85);
+  /* gradient border: inner face white, outer ring blends emotion hue */
+  background:
+    rgba(255,255,255,0.92) padding-box,
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--emo-hex) 32%, rgba(255,255,255,0.6)),
+      color-mix(in srgb, var(--emo-hex)  9%, rgba(255,255,255,0.9)),
+      color-mix(in srgb, var(--emo-hex) 26%, rgba(255,255,255,0.6))
+    ) border-box;
+  border: 1.5px solid transparent;
   box-shadow:
-    0 1px 1px rgba(0,0,0,0.03),
-    0 4px 14px rgba(0,0,0,0.05),
-    0 24px 48px rgba(0,0,0,0.04);
+    0 1px 1px rgba(0,0,0,0.02),
+    0 4px 16px rgba(0,0,0,0.04),
+    0 24px 48px rgba(0,0,0,0.03),
+    0 0 0 0.5px color-mix(in srgb, var(--emo-hex) 10%, transparent) inset;
   padding: 3px;
 }
 .card-inner {
   background: #ffffff;
   border-radius: 19px;
   overflow: hidden;
+}
+
+/* Emotion-tinted dashed border for empty/upload zones */
+.border-emo-dashed {
+  border: 1.5px dashed color-mix(in srgb, var(--emo-hex) 35%, rgba(0,0,0,0.08)) !important;
 }
 
 /* ─ Floating ambient orbs ─────────────────────────────────────────────────── */

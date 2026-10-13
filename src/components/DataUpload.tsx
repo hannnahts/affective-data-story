@@ -262,7 +262,9 @@ export function DataUpload() {
         role="button" tabIndex={0}
         aria-label={t.uploadAria}
         style={{
-          border: `1.5px dashed ${dragging ? '#3b82f6' : isActive ? '#c7d2e0' : '#d1d5db'}`,
+          border: dragging
+            ? '1.5px dashed #3b82f6'
+            : `1.5px dashed color-mix(in srgb, var(--emo-hex) 30%, rgba(0,0,0,0.1))`,
           borderRadius: 8, padding: '10px 12px',
           display: 'flex', alignItems: 'center', gap: 10,
           background: dragging ? '#eff6ff' : isActive ? '#f5f6f7' : '#fafafa',

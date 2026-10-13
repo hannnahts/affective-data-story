@@ -221,11 +221,10 @@ export function StoryCanvas() {
   // Empty state
   if (!generated) {
     return (
-      <div style={{
+      <div className="border-emo-dashed" style={{
         minHeight: 420, display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
-        border: '1.5px dashed rgba(0,0,0,0.12)', borderRadius: 16,
-        gap: 8,
+        borderRadius: 16, gap: 8,
       }}>
         <p style={{ margin: 0, fontSize: 18, color: '#374151', fontWeight: 700, letterSpacing: '-0.02em' }}>{t.storyCanvas}</p>
         <p style={{ margin: 0, fontSize: 13, color: '#6b7280', fontWeight: 400 }}>{t.storyCanvasHint}</p>
