@@ -163,18 +163,18 @@ export default function App() {
     <>
       {/* Emotion-reactive ambient orbs */}
       <div className="ambient-orb" style={{
-        width: 650, height: 650, top: -220, left: -180,
-        background: activeEmo.hex, filter: 'blur(110px)', opacity: 0.13,
+        width: 700, height: 700, top: -240, left: -200,
+        backgroundColor: activeEmo.hex, filter: 'blur(75px)', opacity: 0.28,
         animation: 'floatOrb1 22s ease-in-out infinite', zIndex: 0,
       }} />
       <div className="ambient-orb" style={{
-        width: 520, height: 520, bottom: -160, right: -120,
-        background: activeEmo.hex, filter: 'blur(95px)', opacity: 0.11,
+        width: 560, height: 560, bottom: -180, right: -140,
+        backgroundColor: activeEmo.hex, filter: 'blur(65px)', opacity: 0.24,
         animation: 'floatOrb2 28s ease-in-out infinite', zIndex: 0,
       }} />
       <div className="ambient-orb" style={{
-        width: 380, height: 380, top: '42%', left: '52%',
-        background: activeEmo.bg, filter: 'blur(80px)', opacity: 0.20,
+        width: 420, height: 420, top: '40%', left: '50%',
+        backgroundColor: activeEmo.hex, filter: 'blur(55px)', opacity: 0.18,
         animation: 'floatOrb3 19s ease-in-out infinite', zIndex: 0,
       }} />
       {/* Film grain */}
@@ -200,10 +200,10 @@ export default function App() {
         <div>
           <p style={{
             margin: 0, fontSize: 14, fontWeight: 700, letterSpacing: '-0.02em',
-            background: `linear-gradient(120deg, #0d0d0d 0%, ${activeEmo.hex} 140%)`,
+            display: 'inline-block',
+            background: `linear-gradient(120deg, #0d0d0d 20%, ${activeEmo.hex} 100%)`,
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
-            transition: 'background 1.8s ease',
           }}>{t.appTitle}</p>
         </div>
 
