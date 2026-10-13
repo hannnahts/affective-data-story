@@ -1,13 +1,13 @@
 import { useState, useRef, useCallback } from 'react';
 import type { NarrativePhase, SegmentConfig } from '../types/emotion';
+import { useT } from '../i18n/useT';
 
-
-const PHASE_META: Array<{ phase: NarrativePhase; label: string; color: string }> = [
-  { phase: 'opening',    label: 'Exposition',  color: '#9ca3af' },
-  { phase: 'rising',     label: 'Rising',      color: '#f59e0b' },
-  { phase: 'climax',     label: 'Climax',      color: '#ef4444' },
-  { phase: 'resolution', label: 'Falling',     color: '#3b82f6' },
-  { phase: 'coda',       label: 'Denouement',  color: '#8b5cf6' },
+const PHASE_COLORS: Array<{ phase: NarrativePhase; color: string }> = [
+  { phase: 'opening',    color: '#9ca3af' },
+  { phase: 'rising',     color: '#f59e0b' },
+  { phase: 'climax',     color: '#ef4444' },
+  { phase: 'resolution', color: '#3b82f6' },
+  { phase: 'coda',       color: '#8b5cf6' },
 ];
 
 const SVG_W = 420;
@@ -70,6 +70,15 @@ interface DragState {
 
 export function InteractivePyramid({ segmentConfigs, onUpdate, onCommit, regeneratingPhase }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const t = useT();
+
+  const PHASE_META: Array<{ phase: NarrativePhase; label: string; color: string }> = [
+    { phase: 'opening',    label: t.pyramidPhaseExp,       color: '#9ca3af' },
+    { phase: 'rising',     label: t.pyramidPhaseRising,    color: '#f59e0b' },
+    { phase: 'climax',     label: t.pyramidPhaseClimax,    color: '#ef4444' },
+    { phase: 'resolution', label: t.pyramidPhaseFalling,   color: '#3b82f6' },
+    { phase: 'coda',       label: t.pyramidPhaseDenouement, color: '#8b5cf6' },
+  ];
   const [drag, setDrag] = useState<DragState | null>(null);
   // live visual positions during drag (smooth, unclamped to discrete)
   const [livePos, setLivePos] = useState<Record<string, { x: number; y: number }>>({});
@@ -139,8 +148,8 @@ export function InteractivePyramid({ segmentConfigs, onUpdate, onCommit, regener
     <div>
       {/* Legend: drag hint */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 6, justifyContent: 'flex-end' }}>
-        <span style={{ fontSize: 9.5, color: '#b0b7c3', letterSpacing: '0.03em' }}>↕ Intensity</span>
-        <span style={{ fontSize: 9.5, color: '#b0b7c3', letterSpacing: '0.03em' }}>↔ Length</span>
+        <span style={{ fontSize: 9.5, color: '#b0b7c3', letterSpacing: '0.03em' }}>{t.pyramidIntensityArrow}</span>
+        <span style={{ fontSize: 9.5, color: '#b0b7c3', letterSpacing: '0.03em' }}>{t.pyramidLengthArrow}</span>
       </div>
 
       <svg
@@ -252,8 +261,8 @@ export function InteractivePyramid({ segmentConfigs, onUpdate, onCommit, regener
       <div style={{ display: 'flex', marginTop: 6, alignItems: 'stretch' }}>
         {/* Row labels */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, justifyContent: 'center', marginRight: 6, flexShrink: 0 }}>
-          <span style={{ fontSize: 10, fontWeight: 600, color: '#b0b7c3', letterSpacing: '0.04em', lineHeight: '24px' }}>Intensity</span>
-          <span style={{ fontSize: 10, fontWeight: 600, color: '#b0b7c3', letterSpacing: '0.04em', lineHeight: '17px' }}>Length</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: '#b0b7c3', letterSpacing: '0.04em', lineHeight: '24px' }}>{t.pyramidIntensity}</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: '#b0b7c3', letterSpacing: '0.04em', lineHeight: '17px' }}>{t.pyramidLength}</span>
         </div>
         {/* Phase columns */}
         <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between' }}>

@@ -3,9 +3,11 @@ import type { DragEvent } from 'react';
 import { useEmotionStore } from '../store/emotionStore';
 import { parseFile } from '../services/dataParser';
 import { DEMO_DATASETS } from '../data/demoDatasets';
+import { useT } from '../i18n/useT';
 
 export function DataUpload() {
   const { dataset, setDataset, setDatasetDescription, setDatasetXColumn, setDatasetYColumns, setDatasetGroupBy } = useEmotionStore();
+  const t = useT();
   const fileRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [hovering, setHovering] = useState(false);
@@ -90,14 +92,14 @@ export function DataUpload() {
               {dataset.name}
             </p>
             <p style={{ margin: 0, fontSize: 10, color: '#9ca3af' }}>
-              {dataset.parsed.length} rows · {dataset.columns.length} cols
+              {dataset.parsed.length} {t.rows} · {dataset.columns.length} {t.cols}
             </p>
           </div>
 
           {/* Gear: toggle axes */}
           <button
             onClick={() => setAxesOpen(o => !o)}
-            title={axesOpen ? 'Hide axis settings' : 'Configure axes'}
+            title={axesOpen ? t.hideAxes : t.configureAxes}
             style={{
               flexShrink: 0, width: 26, height: 26, borderRadius: 6,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -140,7 +142,7 @@ export function DataUpload() {
               borderBottom: '1px solid #f0f0f0',
               display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
             }}>
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', flexShrink: 0 }}>X Axis</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', flexShrink: 0 }}>{t.xAxis}</span>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                 {dataset.columns.map(col => {
                   const active = dataset.xColumn === col;
@@ -162,7 +164,7 @@ export function DataUpload() {
             {/* Y Axis — all columns except current X */}
             {dataset.columns.filter(c => c !== dataset.xColumn).length > 0 && (
               <div style={{ padding: '5px 10px', borderTop: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', flexShrink: 0 }}>Y Axis</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', flexShrink: 0 }}>{t.yAxis}</span>
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                   {dataset.columns.filter(c => c !== dataset.xColumn).map(col => {
                     const selected = dataset.yColumns.includes(col);
@@ -190,7 +192,7 @@ export function DataUpload() {
               const active = dataset.groupByColumn ?? null;
               return (
                 <div style={{ padding: '5px 10px', borderTop: '1px solid #f0f0f0', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', flexShrink: 0 }}>Series</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#6b7280', flexShrink: 0 }}>{t.series}</span>
                   <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                     <button onClick={() => setDatasetGroupBy(null)} style={{
                       fontSize: 11, padding: '1px 7px', borderRadius: 4, cursor: 'pointer',
@@ -198,7 +200,7 @@ export function DataUpload() {
                       background: active === null ? '#f3f4f6' : '#f9fafb',
                       color: active === null ? '#374151' : '#9ca3af',
                       fontWeight: active === null ? 700 : 400, transition: 'all 0.12s',
-                    }}>none</button>
+                    }}>{t.seriesNone}</button>
                     {strCols.map(col => (
                       <button key={col} onClick={() => setDatasetGroupBy(col)} title={`Split chart by ${col}`} style={{
                         fontSize: 11, padding: '1px 7px', borderRadius: 4, cursor: 'pointer',
@@ -225,14 +227,14 @@ export function DataUpload() {
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#9ca3af' }}>
                     <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                   </svg>
-                  Description
+                  {t.description}
                 </span>
-                <span style={{ fontSize: 10, color: '#b0b7c3', background: '#f3f4f6', borderRadius: 4, padding: '1px 5px' }}>optional</span>
+                <span style={{ fontSize: 10, color: '#b0b7c3', background: '#f3f4f6', borderRadius: 4, padding: '1px 5px' }}>{t.optional}</span>
               </summary>
               <textarea
                 value={dataset.description ?? ''}
                 onChange={e => setDatasetDescription(e.target.value)}
-                placeholder="Dataset source, context, or your key question…"
+                placeholder={t.descPlaceholder}
                 rows={2}
                 style={{
                   display: 'block', width: '100%', fontSize: 11, lineHeight: 1.6,
@@ -258,7 +260,7 @@ export function DataUpload() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
       <div
         role="button" tabIndex={0}
-        aria-label="Upload CSV or JSON file"
+        aria-label={t.uploadAria}
         style={{
           border: `1.5px dashed ${dragging ? '#3b82f6' : isActive ? '#c7d2e0' : '#d1d5db'}`,
           borderRadius: 8, padding: '10px 12px',
@@ -289,17 +291,17 @@ export function DataUpload() {
         </div>
         <div>
           <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: dragging ? '#2563eb' : '#374151' }}>
-            {dragging ? 'Drop to upload' : 'Drop CSV or JSON'}
+            {dragging ? t.uploadDropActive : t.uploadDrop}
           </p>
-          <p style={{ margin: '1px 0 0', fontSize: 11, color: '#3b82f6' }}>or browse files</p>
+          <p style={{ margin: '1px 0 0', fontSize: 11, color: '#3b82f6' }}>{t.uploadBrowse}</p>
         </div>
-        <input ref={fileRef} type="file" accept=".csv,.json" aria-label="Select data file" style={{ display: 'none' }}
+        <input ref={fileRef} type="file" accept=".csv,.json" aria-label={t.uploadFileAria} style={{ display: 'none' }}
           onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
       </div>
 
       {/* Demo datasets */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-        <span style={{ fontSize: 11, color: '#c4c9d4', whiteSpace: 'nowrap' }}>or try</span>
+        <span style={{ fontSize: 11, color: '#c4c9d4', whiteSpace: 'nowrap' }}>{t.orTry}</span>
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
           {DEMO_DATASETS.map(demo => (
             <button

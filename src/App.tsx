@@ -2,6 +2,7 @@ import { useRef, useState, useCallback } from 'react';
 import { ControlPanel } from './components/ControlPanel';
 import { StoryCanvas } from './components/StoryCanvas';
 import { useEmotionStore } from './store/emotionStore';
+import { useT } from './i18n/useT';
 
 function GearIcon() {
   return (
@@ -16,6 +17,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
   const { apiKey, setApiKey } = useEmotionStore();
   const [showKey, setShowKey] = useState(false);
   const isLive = apiKey.trim().length > 0;
+  const t = useT();
 
   return (
     <>
@@ -37,10 +39,10 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>Settings</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{t.settings}</span>
           <button
             onClick={onClose}
-            aria-label="Close settings"
+            aria-label={t.closeSettings}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', fontSize: 16, lineHeight: 1, padding: 2 }}
           >
             ✕
@@ -50,7 +52,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
         {/* API Key section */}
         <div>
           <p style={{ margin: '0 0 8px', fontSize: 11, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            OpenAI API Key
+            {t.apiKeyLabel}
           </p>
           <div style={{ display: 'flex', gap: 6 }}>
             <input
@@ -58,7 +60,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
               value={apiKey}
               onChange={e => setApiKey(e.target.value)}
               placeholder="sk-…"
-              aria-label="OpenAI API Key"
+              aria-label={t.apiKeyLabel}
               autoComplete="off"
               style={{
                 flex: 1, fontSize: 11, padding: '7px 10px',
@@ -68,14 +70,14 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
             />
             <button
               onClick={() => setShowKey(p => !p)}
-              aria-label={showKey ? 'Hide' : 'Show'}
+              aria-label={showKey ? t.apiKeyHide : t.apiKeyShow}
               style={{
                 fontSize: 11, padding: '0 10px', border: '1px solid #e5e7eb',
                 borderRadius: 8, cursor: 'pointer', background: '#f9fafb', color: '#6b7280',
                 whiteSpace: 'nowrap',
               }}
             >
-              {showKey ? 'Hide' : 'Show'}
+              {showKey ? t.apiKeyHide : t.apiKeyShow}
             </button>
           </div>
 
@@ -86,7 +88,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
               background: isLive ? '#22c55e' : '#d1d5db', flexShrink: 0,
             }} />
             <span style={{ fontSize: 11, color: isLive ? '#16a34a' : '#9ca3af' }}>
-              {isLive ? 'Live mode — using GPT-4o-mini' : 'Mock mode — preview without API key'}
+              {isLive ? t.liveMode : t.mockMode}
             </span>
           </div>
         </div>
@@ -97,6 +99,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
 
 function LanguageToggle() {
   const { language, setLanguage } = useEmotionStore();
+  const t = useT();
   return (
     <div style={{ display: 'flex', gap: 2, background: '#f3f4f6', borderRadius: 8, padding: 2 }}>
       {(['en', 'zh'] as const).map(lang => (
@@ -104,7 +107,7 @@ function LanguageToggle() {
           key={lang}
           onClick={() => setLanguage(lang)}
           aria-pressed={language === lang}
-          aria-label={lang === 'en' ? 'English' : 'Chinese'}
+          aria-label={lang === 'en' ? t.langEn : t.langZh}
           style={{
             padding: '4px 10px',
             fontSize: 12,
@@ -126,6 +129,7 @@ function LanguageToggle() {
 }
 
 export default function App() {
+  const t = useT();
   const [splitPercent, setSplitPercent] = useState(40);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
@@ -156,14 +160,14 @@ export default function App() {
     <div style={{ height: '100vh', background: '#f9fafb', display: 'flex', flexDirection: 'column', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', overflow: 'hidden' }}>
       <header style={{ background: '#fff', borderBottom: '1px solid #f0f0f0', padding: '10px 24px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#1a1a1a' }}>Affective Data Storytelling</p>
+          <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#1a1a1a' }}>{t.appTitle}</p>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <LanguageToggle />
           <button
             onClick={() => setSettingsOpen(p => !p)}
-            aria-label="Settings"
+            aria-label={t.settings}
             aria-expanded={settingsOpen}
             style={{
               background: settingsOpen ? '#f3f4f6' : 'none',

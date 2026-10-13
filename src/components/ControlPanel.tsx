@@ -3,13 +3,8 @@ import { useEmotionStore } from '../store/emotionStore';
 import { EMOTION_META } from '../data/mockData';
 import { DataUpload } from './DataUpload';
 import { InteractivePyramid } from './InteractivePyramid';
+import { useT } from '../i18n/useT';
 import type { EmotionId } from '../types/emotion';
-
-const INTENSITY_GUIDE = [
-  { label: 'Low  (0–33)',    desc: 'Light touch, emotion implied',  color: '#9ca3af' },
-  { label: 'Mid  (34–66)',   desc: 'Balanced narrative and affect', color: '#f59e0b' },
-  { label: 'High (67–100)', desc: 'Dramatic, bold word choices',   color: '#ef4444' },
-];
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -29,6 +24,7 @@ export function ControlPanel() {
     segmentConfigs, setSegmentConfig, regeneratingPhase, regenerateSegment,
     language,
   } = useEmotionStore();
+  const t = useT();
 
   // Auto-refresh: after first generation, debounce on emotion or language change
   const isFirstRenderEmo = useRef(true);
@@ -54,10 +50,16 @@ export function ControlPanel() {
   const activeEmo = EMOTION_META.find(e => e.id === selectedEmotion)!;
   const isLiveMode = apiKey.trim().length > 0;
 
+  const intensityGuide = [
+    { label: t.intensityLow,  desc: t.intensityLowDesc,  color: '#9ca3af' },
+    { label: t.intensityMid,  desc: t.intensityMidDesc,  color: '#f59e0b' },
+    { label: t.intensityHigh, desc: t.intensityHighDesc,  color: '#ef4444' },
+  ];
+
   const loadingLabel: Record<string, string> = {
-    analyzing: 'Analyzing data…',
-    narrating: 'Generating narrative…',
-    encoding: 'Encoding visual params…',
+    analyzing: t.loadingAnalyzing,
+    narrating: t.loadingNarrating,
+    encoding:  t.loadingEncoding,
   };
 
   return (
@@ -71,7 +73,7 @@ export function ControlPanel() {
         boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
       }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', letterSpacing: '0.01em', marginBottom: 12 }}>
-          Dataset
+          {t.dataset}
         </div>
         <DataUpload />
       </div>
@@ -86,7 +88,7 @@ export function ControlPanel() {
 
         {/* Emotion Target */}
         <div>
-          <SectionLabel>Emotion Target</SectionLabel>
+          <SectionLabel>{t.emotionTarget}</SectionLabel>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
             {EMOTION_META.map(emo => {
               const active = selectedEmotion === emo.id;
@@ -131,9 +133,9 @@ export function ControlPanel() {
 
         {/* Intensity guide */}
         <div>
-          <SectionLabel>Intensity Guide</SectionLabel>
+          <SectionLabel>{t.intensityGuide}</SectionLabel>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-            {INTENSITY_GUIDE.map(g => (
+            {intensityGuide.map(g => (
               <div key={g.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: g.color, flexShrink: 0 }} />
                 <span style={{ fontSize: 11, fontWeight: 600, color: g.color, minWidth: 80 }}>{g.label}</span>
@@ -150,7 +152,7 @@ export function ControlPanel() {
             fontSize: 11, fontWeight: 700, color: '#6b7280',
             textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6,
           }}>
-            Phase Tuning
+            {t.phaseTuning}
           </div>
           <InteractivePyramid
             segmentConfigs={segmentConfigs}
@@ -172,7 +174,7 @@ export function ControlPanel() {
         onClick={generate}
         disabled={isLoading}
         aria-busy={isLoading}
-        aria-label={isLoading ? (loadingStage ? loadingLabel[loadingStage] : 'Processing') : isLiveMode ? 'Generate affective narrative' : 'Preview mock story'}
+        aria-label={isLoading ? (loadingStage ? loadingLabel[loadingStage] : t.processing) : isLiveMode ? t.generateAria : t.previewAria}
         style={{
           width: '100%', padding: '12px 0', fontSize: 14, fontWeight: 600,
           border: `1.5px solid ${isLoading ? '#e5e7eb' : activeEmo.hex}`,
@@ -185,10 +187,9 @@ export function ControlPanel() {
         }}
       >
         {isLoading
-          ? (loadingStage ? loadingLabel[loadingStage] : 'Processing…')
-          : isLiveMode ? 'Generate Story ↗' : 'Preview (Mock) ↗'}
+          ? (loadingStage ? loadingLabel[loadingStage] : t.processing)
+          : isLiveMode ? t.generateBtn : t.previewBtn}
       </button>
-
 
     </div>
   );
