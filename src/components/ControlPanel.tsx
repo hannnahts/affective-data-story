@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useEmotionStore } from '../store/emotionStore';
 import { EMOTION_META } from '../data/mockData';
 import { DataUpload } from './DataUpload';
